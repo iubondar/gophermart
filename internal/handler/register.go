@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -15,7 +16,7 @@ type RegisterIn struct {
 }
 
 type UserRegistrator interface {
-	Register(userID uuid.UUID, login string, password string) (ok bool, err error)
+	Register(ctx context.Context, userID uuid.UUID, login string, password_hash string) (ok bool, err error)
 }
 
 type RegisterHandler struct {
@@ -55,7 +56,12 @@ func (handler RegisterHandler) Register(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	ok, err := handler.registrator.Register(userID, in.Login, in.Password)
+	pass_hash, err := auth.HashPassword(in.Password)
+	if err != nil {
+		http.Error(res, "Error hashing password "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	ok, err := handler.registrator.Register(req.Context(), userID, in.Login, pass_hash)
 	if err != nil {
 		http.Error(res, "Failed to register user", http.StatusBadRequest)
 		return

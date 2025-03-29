@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const secretKey = "supersecretkey"
@@ -104,4 +105,13 @@ func GetUserID(tokenString string) (userID uuid.UUID, err error) {
 	}
 
 	return claims.UserID, nil
+}
+
+func HashPassword(password string) (string, error) {
+	// Use bcrypt.DefaultCost for the hashing cost
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", fmt.Errorf("failed to hash password: %w", err)
+	}
+	return string(hashedPassword), nil
 }
