@@ -13,6 +13,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //go:embed migrations/*.sql
@@ -63,4 +64,25 @@ func (s *Storage) Register(ctx context.Context, userID uuid.UUID, login string, 
 	}
 
 	return true, nil
+}
+
+func (s *Storage) CheckLogin(ctx context.Context, login string, password string) (userID uuid.UUID, err error) {
+	row := s.db.QueryRowContext(ctx, queries.GetUserID, login)
+
+	var hashedPassword string
+	err = row.Scan(&userID, &hashedPassword)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return uuid.Nil, nil
+	}
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err != nil {
+		return uuid.Nil, nil
+	}
+
+	return userID, nil
 }

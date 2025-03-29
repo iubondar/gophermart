@@ -10,8 +10,10 @@ func NewRouter(storage *storage.Storage) (chi.Router, error) {
 	router := chi.NewRouter()
 
 	registerHandler := handler.NewRegisterHandler(storage)
+	loginHandler := handler.NewLoginHandler(storage)
 
 	router.Post("/api/user/register", registerHandler.Register)
+	router.Post("/api/user/login", loginHandler.Login)
 
 	return router, nil
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type RegisterIn struct {
@@ -50,26 +51,34 @@ func (handler RegisterHandler) Register(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	userID, err := auth.GetUserIDFromAuthCookieOrSetNew(res, req)
-	if err != nil {
-		http.Error(res, "Error setting userID "+err.Error(), http.StatusBadRequest)
+	if len(in.Login) < 1 || len(in.Password) < 1 {
+		http.Error(res, "Login or password is empty", http.StatusBadRequest)
 		return
 	}
 
-	pass_hash, err := auth.HashPassword(in.Password)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 	if err != nil {
 		http.Error(res, "Error hashing password "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	ok, err := handler.registrator.Register(req.Context(), userID, in.Login, pass_hash)
+
+	userID := uuid.New()
+	ok, err := handler.registrator.Register(req.Context(), userID, in.Login, string(hashedPassword))
 	if err != nil {
 		http.Error(res, "Failed to register user", http.StatusBadRequest)
 		return
 	}
 
-	if ok {
-		res.WriteHeader(http.StatusOK)
-	} else {
+	if !ok {
 		res.WriteHeader(http.StatusConflict)
+		return
 	}
+
+	err = auth.SetNewAuthCookie(userID, res)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res.WriteHeader(http.StatusOK)
 }

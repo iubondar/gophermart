@@ -7,7 +7,6 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
-	"golang.org/x/crypto/bcrypt"
 )
 
 const secretKey = "supersecretkey"
@@ -20,43 +19,14 @@ type claims struct {
 	UserID uuid.UUID
 }
 
-func GetUserIDFromAuthCookieOrSetNew(res http.ResponseWriter, req *http.Request) (userID uuid.UUID, err error) {
-	authCookie, err := req.Cookie(AuthCookieName)
-	if err != nil {
-		zap.L().Sugar().Debugln("No auth cookie found, set new")
-		return setNewAuthCookie(res)
-	}
-
-	userID, err = GetUserID(authCookie.Value)
-	if err != nil {
-		zap.L().Sugar().Debugln("Error getting user id from cookie, will set new. Message: ", err.Error())
-		return setNewAuthCookie(res)
-	}
-
-	return userID, nil
-}
-
-func setNewAuthCookie(res http.ResponseWriter) (userID uuid.UUID, err error) {
-	userID = uuid.New()
-
-	authCookie, err := NewAuthCookie(userID)
-	if err != nil {
-		return uuid.Nil, err
-	}
-
-	http.SetCookie(res, authCookie)
-
-	return userID, nil
-}
-
-func NewAuthCookie(userID uuid.UUID) (authCookie *http.Cookie, err error) {
+func SetNewAuthCookie(userID uuid.UUID, res http.ResponseWriter) error {
 	jwtString, err := buildJWTString(userID)
 	if err != nil {
 		zap.L().Sugar().Debugln("Error building jwtString", err.Error())
-		return nil, err
+		return err
 	}
 
-	authCookie = &http.Cookie{
+	authCookie := &http.Cookie{
 		Name:     AuthCookieName,
 		Value:    jwtString,
 		HttpOnly: true, // Prevents JavaScript access
@@ -65,7 +35,9 @@ func NewAuthCookie(userID uuid.UUID) (authCookie *http.Cookie, err error) {
 		MaxAge:   3600, // Cookie expires in 1 hour
 	}
 
-	return authCookie, nil
+	http.SetCookie(res, authCookie)
+
+	return nil
 }
 
 // BuildJWTString создаёт токен и возвращает его в виде строки.
@@ -105,13 +77,4 @@ func GetUserID(tokenString string) (userID uuid.UUID, err error) {
 	}
 
 	return claims.UserID, nil
-}
-
-func HashPassword(password string) (string, error) {
-	// Use bcrypt.DefaultCost for the hashing cost
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", fmt.Errorf("failed to hash password: %w", err)
-	}
-	return string(hashedPassword), nil
 }
