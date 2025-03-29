@@ -6,9 +6,8 @@ import (
 	"github.com/iubondar/gophermart/internal/storage"
 )
 
-func NewRouter() (chi.Router, error) {
+func NewRouter(storage *storage.Storage) (chi.Router, error) {
 	router := chi.NewRouter()
-	storage := storage.NewStorage()
 
 	registerHandler := handler.NewRegisterHandler(storage)
 

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/iubondar/gophermart/internal/router"
+	"github.com/iubondar/gophermart/internal/storage"
 	"go.uber.org/zap"
 )
 
@@ -13,7 +14,12 @@ func init() {
 }
 
 func main() {
-	router, err := router.NewRouter()
+	storage, err := storage.NewStorage("")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	router, err := router.NewRouter(storage)
 	if err != nil {
 		log.Fatal(err)
 	}
