@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/iubondar/gophermart/internal/config"
 	"github.com/iubondar/gophermart/internal/router"
 	"github.com/iubondar/gophermart/internal/storage"
 	"go.uber.org/zap"
@@ -14,7 +16,12 @@ func init() {
 }
 
 func main() {
-	storage, err := storage.NewStorage("")
+	config, err := config.NewConfig(os.Args[0], os.Args[1:])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	storage, err := storage.NewStorage(config.DatabaseURI)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,6 +32,6 @@ func main() {
 	}
 
 	log.Fatal(
-		http.ListenAndServe("localhost:8080", router),
+		http.ListenAndServe(config.RunAddress, router),
 	)
 }

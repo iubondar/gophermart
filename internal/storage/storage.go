@@ -19,16 +19,11 @@ import (
 //go:embed migrations/*.sql
 var embedMigrations embed.FS
 
-const localDatabaseDSN = "host=localhost user=newuser password=password dbname=gophermart sslmode=disable" // для локальной разработки
-
 type Storage struct {
 	db *sql.DB
 }
 
 func NewStorage(dsn string) (storage *Storage, err error) {
-	if len(dsn) == 0 {
-		dsn = localDatabaseDSN
-	}
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
