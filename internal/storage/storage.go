@@ -7,6 +7,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/iubondar/gophermart/internal/constants"
 	"github.com/iubondar/gophermart/internal/storage/queries"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -80,4 +81,9 @@ func (s *Storage) CheckLogin(ctx context.Context, login string, password string)
 	}
 
 	return userID, nil
+}
+
+func (s *Storage) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumber string) (result constants.OrderRegistrationResult, err error) {
+	// TODO: implementation
+	return constants.AcceptedToProcessing, nil
 }

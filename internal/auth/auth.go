@@ -59,7 +59,23 @@ func buildJWTString(userID uuid.UUID) (string, error) {
 	return tokenString, nil
 }
 
-func GetUserID(tokenString string) (userID uuid.UUID, err error) {
+func GetUserIDFromReq(req *http.Request) (userID uuid.UUID, err error) {
+	authCookie, err := req.Cookie(AuthCookieName)
+	if err != nil {
+		zap.L().Sugar().Debugln("No auth cookie found")
+		return uuid.Nil, err
+	}
+
+	userID, err = getUserID(authCookie.Value)
+	if err != nil {
+		zap.L().Sugar().Debugln("Error getting user id from cookie. Message: ", err.Error())
+		return uuid.Nil, err
+	}
+
+	return userID, nil
+}
+
+func getUserID(tokenString string) (userID uuid.UUID, err error) {
 	claims := &claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims,
 		func(t *jwt.Token) (interface{}, error) {

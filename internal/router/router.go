@@ -11,9 +11,11 @@ func NewRouter(storage *storage.Storage) (chi.Router, error) {
 
 	registerHandler := handler.NewRegisterHandler(storage)
 	loginHandler := handler.NewLoginHandler(storage)
+	registerOrderHandler := handler.NewRegisterOrderHandler(storage)
 
 	router.Post("/api/user/register", registerHandler.Register)
 	router.Post("/api/user/login", loginHandler.Login)
+	router.Post("/api/user/orders", registerOrderHandler.RegisterOrder)
 
 	return router, nil
 }
