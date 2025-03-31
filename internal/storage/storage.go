@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/constants"
 	"github.com/iubondar/gophermart/internal/storage/queries"
+	"github.com/iubondar/gophermart/internal/validator"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -84,6 +85,34 @@ func (s *Storage) CheckLogin(ctx context.Context, login string, password string)
 }
 
 func (s *Storage) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumber string) (result constants.OrderRegistrationResult, err error) {
-	// TODO: implementation
-	return constants.AcceptedToProcessing, nil
+	// Валидируем номер заказа алгоритмом Луна
+	isValid := validator.ValidateLuhn(orderNumber)
+	if !isValid {
+		return constants.WrongOrderNumberFormat, nil
+	}
+
+	// Ищем заказ по номеру
+	var orderUserID uuid.UUID
+	row := s.db.QueryRowContext(ctx, queries.GetUserIDByOrderNum, orderNumber)
+	err = row.Scan(&orderUserID)
+	if errors.Is(err, sql.ErrNoRows) {
+		// Не нашли  - сохраняем заказ в БД с начальным статусом
+		_, err = s.db.ExecContext(ctx, queries.RegisterOrder, userID, orderNumber, constants.New)
+		if err != nil {
+			zap.L().Sugar().Debugln("Error insert new order:", err.Error())
+			return 0, err
+		}
+		return constants.AcceptedToProcessing, nil
+	} else if err != nil {
+		// Другая ошибка - возвращаем ошибку
+		zap.L().Sugar().Debugln("Error query order by num:", err.Error())
+		return 0, err
+	} else {
+		// Нашли - сверяем userID и возвращаем нужный результат
+		if userID == orderUserID {
+			return constants.AlreadyRegistered, nil
+		} else {
+			return constants.RegisteredByAnotherUser, nil
+		}
+	}
 }

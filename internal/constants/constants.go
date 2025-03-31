@@ -1,7 +1,12 @@
 package constants
 
+type OrderProcessingStatus string
+
 const (
-	OrderStatusProcessing = "processing"
+	New        OrderProcessingStatus = "NEW"
+	Processing OrderProcessingStatus = "PROCESSIMG"
+	Invalid    OrderProcessingStatus = "INVALID"
+	Processed  OrderProcessingStatus = "PROCESSED"
 )
 
 type OrderRegistrationResult int
