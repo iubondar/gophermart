@@ -12,9 +12,9 @@ CREATE TABLE IF NOT EXISTS orders (
     accrual integer DEFAULT 0
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS order_user_id_idx ON orders (user_id);
+CREATE INDEX IF NOT EXISTS order_user_id_idx ON orders (user_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS order_status_idx ON orders (order_status);
+CREATE INDEX IF NOT EXISTS order_status_idx ON orders (order_status);
 
 -- +goose Down
 -- +goose StatementBegin
@@ -23,6 +23,6 @@ SELECT 'down SQL query';
 
 DROP INDEX IF EXISTS order_status_idx;
 
-DROP INDEX IF EXISTS user_id_idx;
+DROP INDEX IF EXISTS order_user_id_idx;
 
 DROP TABLE IF EXISTS users;

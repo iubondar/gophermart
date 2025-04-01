@@ -5,9 +5,11 @@ import (
 	"database/sql"
 	"embed"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/constants"
+	"github.com/iubondar/gophermart/internal/models"
 	"github.com/iubondar/gophermart/internal/storage/queries"
 	"github.com/iubondar/gophermart/internal/validator"
 	"github.com/jackc/pgerrcode"
@@ -115,4 +117,32 @@ func (s *Storage) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumb
 			return constants.RegisteredByAnotherUser, nil
 		}
 	}
+}
+
+func (s *Storage) Orders(ctx context.Context, userID uuid.UUID) (orders []models.Order, err error) {
+	rows, err := s.db.QueryContext(ctx, queries.Orders, userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return []models.Order{}, nil
+		} else {
+			return nil, err
+		}
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var order models.Order
+		err = rows.Scan(&order.Number, &order.Status, &order.Accrual, &order.UploadedAt)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error processing rows: %s", err.Error())
+	}
+
+	return orders, nil
 }
