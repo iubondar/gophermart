@@ -99,7 +99,7 @@ func (s *Storage) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumb
 	err = row.Scan(&orderUserID)
 	if errors.Is(err, sql.ErrNoRows) {
 		// Не нашли  - сохраняем заказ в БД с начальным статусом
-		_, err = s.db.ExecContext(ctx, queries.RegisterOrder, userID, orderNumber, constants.New)
+		_, err = s.db.ExecContext(ctx, queries.RegisterOrder, userID, orderNumber, constants.OrderStatusNew)
 		if err != nil {
 			zap.L().Sugar().Debugln("Error insert new order:", err.Error())
 			return 0, err

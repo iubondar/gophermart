@@ -17,10 +17,10 @@ type OrdersRepository interface {
 }
 
 type OrdersOut struct {
-	Number     string                          `json:"number"`
-	Status     constants.OrderProcessingStatus `json:"status"`
-	Accrual    int                             `json:"accrual"`
-	UploadedAt string                          `json:"uploaded_at"`
+	Number     string                `json:"number"`
+	Status     constants.OrderStatus `json:"status"`
+	Accrual    int                   `json:"accrual"`
+	UploadedAt string                `json:"uploaded_at"`
 }
 
 type OrdersHandler struct {

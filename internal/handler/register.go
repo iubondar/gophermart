@@ -16,15 +16,15 @@ type RegisterIn struct {
 	Password string `json:"password"`
 }
 
-type UserRegistrator interface {
+type UserRegistrar interface {
 	Register(ctx context.Context, userID uuid.UUID, login string, password_hash string) (ok bool, err error)
 }
 
 type RegisterHandler struct {
-	registrator UserRegistrator
+	registrator UserRegistrar
 }
 
-func NewRegisterHandler(registrator UserRegistrator) *RegisterHandler {
+func NewRegisterHandler(registrator UserRegistrar) *RegisterHandler {
 	return &RegisterHandler{
 		registrator: registrator,
 	}

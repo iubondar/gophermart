@@ -7,6 +7,7 @@ import (
 
 	"github.com/iubondar/gophermart/internal/config"
 	"github.com/iubondar/gophermart/internal/router"
+	"github.com/iubondar/gophermart/internal/service"
 	"github.com/iubondar/gophermart/internal/storage"
 	"go.uber.org/zap"
 )
@@ -25,6 +26,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	pollingService := service.NewPollingService(config.AccrualSystemAddress)
+	pollingService.Start()
 
 	router, err := router.NewRouter(storage)
 	if err != nil {

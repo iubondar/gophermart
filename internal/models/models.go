@@ -8,7 +8,7 @@ import (
 
 type Order struct {
 	Number     string
-	Status     constants.OrderProcessingStatus
+	Status     constants.OrderStatus
 	Accrual    int
 	UploadedAt time.Time
 }
