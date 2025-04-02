@@ -48,8 +48,8 @@ func NewStorage(dsn string) (storage *Storage, err error) {
 	}, nil
 }
 
-func (s *Storage) Register(ctx context.Context, userID uuid.UUID, login string, password_hash string) (ok bool, err error) {
-	_, err = s.db.ExecContext(ctx, queries.InsertUser, userID, login, password_hash)
+func (s *Storage) Register(ctx context.Context, userID uuid.UUID, login string, passwordHash string) (ok bool, err error) {
+	_, err = s.db.ExecContext(ctx, queries.InsertUser, userID, login, passwordHash)
 	if err != nil {
 		// Если пользователь с логином уже существует - возвращаем не ок
 		var pgErr *pgconn.PgError

@@ -17,7 +17,7 @@ type RegisterIn struct {
 }
 
 type UserRegistrar interface {
-	Register(ctx context.Context, userID uuid.UUID, login string, password_hash string) (ok bool, err error)
+	Register(ctx context.Context, userID uuid.UUID, login string, passwordHash string) (ok bool, err error)
 }
 
 type RegisterHandler struct {

@@ -16,7 +16,7 @@ type LoginIn struct {
 }
 
 type LoginChecker interface {
-	CheckLogin(ctx context.Context, login string, password_hash string) (userID uuid.UUID, err error)
+	CheckLogin(ctx context.Context, login string, passwordHash string) (userID uuid.UUID, err error)
 }
 
 type LoginHandler struct {
