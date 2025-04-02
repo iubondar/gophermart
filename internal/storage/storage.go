@@ -213,3 +213,31 @@ func (s *Storage) UpdateOrders(ctx context.Context, orders []models.OrderStatus)
 
 	return tx.Commit()
 }
+
+func (s *Storage) Withdrawals(ctx context.Context, userID uuid.UUID) (withdrawals []models.Withdrawal, err error) {
+	rows, err := s.db.QueryContext(ctx, queries.Withdrawals, userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return []models.Withdrawal{}, nil
+		} else {
+			return nil, err
+		}
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var withdrawal models.Withdrawal
+		err = rows.Scan(&withdrawal.Number, &withdrawal.Sum, &withdrawal.ProcessedAt)
+		if err != nil {
+			return nil, err
+		}
+		withdrawals = append(withdrawals, withdrawal)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error processing rows: %s", err.Error())
+	}
+
+	return withdrawals, nil
+}

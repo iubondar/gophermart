@@ -21,3 +21,9 @@ type OrderStatus struct {
 	Status  constants.OrderStatus
 	Accrual int
 }
+
+type Withdrawal struct {
+	Number      string
+	Sum         int
+	ProcessedAt time.Time
+}

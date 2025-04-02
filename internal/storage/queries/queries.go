@@ -18,4 +18,6 @@ const (
 	UpdateOrder string = "UPDATE orders SET order_status = $1, accrual = $2 WHERE order_number = $3"
 
 	AddBalance string = "UPDATE users SET balance = balance + $1 WHERE user_id = $2"
+
+	Withdrawals string = "SELECT order_number, sum, processed_at FROM withdrawals WHERE user_id = $1 ORDER BY processed_at DESC;"
 )

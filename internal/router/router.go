@@ -12,6 +12,7 @@ func NewRouter(storage *storage.Storage) (chi.Router, error) {
 	loginHandler := handler.NewLoginHandler(storage)
 	registerOrderHandler := handler.NewRegisterOrderHandler(storage)
 	ordersHandler := handler.NewOrdersHandler(storage)
+	withrawalsHandler := handler.NewWithdrawalsHandler(storage)
 
 	router := chi.NewRouter()
 	router.Use(logging.WithLogging)
@@ -19,6 +20,7 @@ func NewRouter(storage *storage.Storage) (chi.Router, error) {
 	router.Post("/api/user/login", loginHandler.Login)
 	router.Post("/api/user/orders", registerOrderHandler.RegisterOrder)
 	router.Get("/api/user/orders", ordersHandler.Orders)
+	router.Get("/api/user/withdrawals", withrawalsHandler.Withdrawals)
 
 	return router, nil
 }
