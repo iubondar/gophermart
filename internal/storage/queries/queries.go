@@ -12,7 +12,7 @@ const (
 	Orders string = "SELECT order_number, order_status, accrual, uploaded_at FROM orders WHERE user_id = $1 ORDER BY uploaded_at DESC;"
 
 	OrdersToUpdate string = `SELECT user_id, order_number, order_status, accrual, uploaded_at  FROM orders 
-	WHERE order_status IN ('REGISTERED', 'PROCESSING')
+	WHERE order_status IN ('NEW', 'PROCESSING')
 	ORDER BY uploaded_at ASC LIMIT $1`
 
 	UpdateOrder string = "UPDATE orders SET order_status = $1, accrual = $2 WHERE order_number = $3"

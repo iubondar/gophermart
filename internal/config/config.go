@@ -17,7 +17,7 @@ type Config struct {
 const (
 	defaultRunAddress           = "localhost:8000"
 	defaultDatabaseURI          = "host=localhost user=newuser password=password dbname=gophermart sslmode=disable"
-	defaultAccrualSystemAddress = "localhost:8080"
+	defaultAccrualSystemAddress = "http://localhost:8080"
 )
 
 func NewConfig(progname string, args []string) (*Config, error) {

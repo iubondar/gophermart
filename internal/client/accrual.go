@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -34,6 +33,16 @@ func NewAccrualClient(accrualSystemAddress string) *AccrualClient {
 func (c AccrualClient) FetchOrderStatus(order models.Order) (out models.OrderStatus, err error) {
 	var result accrualStatus
 	resp, err := c.httpc.R().SetResult(&result).Get("/api/orders/" + order.Number)
+
+	zap.L().Sugar().Debugln(
+		"Accrual response info:",
+		"Error:", err,
+		"Status Code:", resp.StatusCode(),
+		"Status:", resp.Status(),
+		"Time:", resp.Time(),
+		"Body:\n", resp,
+	)
+
 	if err != nil {
 		zap.L().Sugar().Debugln("Error fetching order status, number ", order.Number, ", error: ", err.Error())
 		return models.OrderStatus{}, err
@@ -73,8 +82,4 @@ func mapAccrualStatus(accrualStatus string) constants.OrderStatus {
 	default:
 		return constants.OrderStatusNew
 	}
-}
-
-func (c AccrualClient) UpdateOrders(ctx context.Context, orders []models.OrderStatus) {
-
 }
