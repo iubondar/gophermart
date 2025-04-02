@@ -146,3 +146,70 @@ func (s *Storage) Orders(ctx context.Context, userID uuid.UUID) (orders []models
 
 	return orders, nil
 }
+
+func (s *Storage) OrdersToUpdate(ctx context.Context, limit int) (orders []models.Order, err error) {
+	rows, err := s.db.QueryContext(ctx, queries.OrdersToUpdate, limit)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return orders, nil
+		} else {
+			return nil, err
+		}
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var order models.Order
+		err = rows.Scan(&order.UserID, &order.Number, &order.Status, &order.Accrual, &order.UploadedAt)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error processing rows: %s", err.Error())
+	}
+
+	return orders, nil
+}
+
+func (s *Storage) UpdateOrders(ctx context.Context, orders []models.OrderStatus) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	// если Commit будет раньше, то откат проигнорируется
+	defer tx.Rollback()
+
+	updateStmt, err := tx.PrepareContext(ctx, queries.UpdateOrder)
+	if err != nil {
+		return err
+	}
+	defer updateStmt.Close()
+
+	addStmt, err := tx.PrepareContext(ctx, queries.AddBalance)
+	if err != nil {
+		return err
+	}
+	defer addStmt.Close()
+
+	for _, order := range orders {
+		// обновляем статус заказа
+		_, err = updateStmt.ExecContext(ctx, order.Status, order.Accrual, order.Number)
+		if err != nil {
+			return err
+		}
+
+		// добавляем баланс пользователю, если заказ обработан
+		if order.Status == constants.OrderStatusProcessed {
+			_, err = addStmt.ExecContext(ctx, order.Accrual, order.UserID)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return tx.Commit()
+}

@@ -10,4 +10,12 @@ const (
 	RegisterOrder string = "INSERT INTO orders (user_id, order_number, order_status) VALUES ($1, $2, $3);"
 
 	Orders string = "SELECT order_number, order_status, accrual, uploaded_at FROM orders WHERE user_id = $1 ORDER BY uploaded_at DESC;"
+
+	OrdersToUpdate string = `SELECT user_id, order_number, order_status, accrual, uploaded_at  FROM orders 
+	WHERE order_status IN (\"REGISTERED\", \"PROCESSING\")
+	ORDER BY uploaded_at ASC LIMIT $1`
+
+	UpdateOrder string = "UPDATE orders SET order_status = $1, accrual = $2 WHERE order_number = $3"
+
+	AddBalance string = "UPDAT users SET balance = balance + $1 WHERE user_id = $2"
 )

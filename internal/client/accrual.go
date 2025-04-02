@@ -1,23 +1,19 @@
 package client
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/iubondar/gophermart/internal/constants"
+	"github.com/iubondar/gophermart/internal/models"
 	"go.uber.org/zap"
 )
 
 type (
 	AccrualClient struct {
 		httpc *resty.Client
-	}
-
-	OrderStatusOut struct {
-		Number  string
-		Status  constants.OrderStatus
-		Accrual int
 	}
 
 	accrualStatus struct {
@@ -35,27 +31,29 @@ func NewAccrualClient(accrualSystemAddress string) *AccrualClient {
 	}
 }
 
-func (c AccrualClient) FetchOrderStatus(orderNumber string) (out OrderStatusOut, err error) {
+func (c AccrualClient) FetchOrderStatus(order models.Order) (out models.OrderStatus, err error) {
 	var result accrualStatus
-	resp, err := c.httpc.R().SetResult(&result).Get("/api/orders/" + orderNumber)
+	resp, err := c.httpc.R().SetResult(&result).Get("/api/orders/" + order.Number)
 	if err != nil {
-		zap.L().Sugar().Debugln("Error fetching order status, number ", orderNumber, ", error: ", err.Error())
-		return OrderStatusOut{}, err
+		zap.L().Sugar().Debugln("Error fetching order status, number ", order.Number, ", error: ", err.Error())
+		return models.OrderStatus{}, err
 	}
 
 	if resp.StatusCode() >= 400 {
-		return OrderStatusOut{}, fmt.Errorf("fetching order status: %s", resp.Status())
+		return models.OrderStatus{}, fmt.Errorf("fetching order status: %s", resp.Status())
 	}
 
 	if resp.StatusCode() == http.StatusNoContent {
-		return OrderStatusOut{
-			Number:  orderNumber,
+		return models.OrderStatus{
+			UserID:  order.UserID,
+			Number:  result.Order,
 			Status:  constants.OrderStatusNew,
 			Accrual: 0,
 		}, nil
 	}
 
-	return OrderStatusOut{
+	return models.OrderStatus{
+		UserID:  order.UserID,
 		Number:  result.Order,
 		Status:  mapAccrualStatus(result.Status),
 		Accrual: result.Accrual,
@@ -75,4 +73,8 @@ func mapAccrualStatus(accrualStatus string) constants.OrderStatus {
 	default:
 		return constants.OrderStatusNew
 	}
+}
+
+func (c AccrualClient) UpdateOrders(ctx context.Context, orders []models.OrderStatus) {
+
 }

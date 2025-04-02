@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/iubondar/gophermart/internal/client"
 	"github.com/iubondar/gophermart/internal/config"
 	"github.com/iubondar/gophermart/internal/router"
 	"github.com/iubondar/gophermart/internal/service"
@@ -27,7 +28,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	pollingService := service.NewPollingService(config.AccrualSystemAddress)
+	accrualClient := client.NewAccrualClient(config.AccrualSystemAddress)
+
+	pollingService := service.NewPollingService(accrualClient, storage, 0)
 	pollingService.Start()
 
 	router, err := router.NewRouter(storage)

@@ -25,4 +25,4 @@ DROP INDEX IF EXISTS order_status_idx;
 
 DROP INDEX IF EXISTS order_user_id_idx;
 
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS orders;
