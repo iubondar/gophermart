@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
 	"github.com/iubondar/gophermart/internal/constants"
+	"go.uber.org/zap"
 )
 
 type Withdrawer interface {
@@ -59,6 +60,7 @@ func (handler WithdrawHandler) Withdraw(res http.ResponseWriter, req *http.Reque
 
 	result, err := handler.withdrawer.Withdraw(req.Context(), userID, in.Order, in.Sum)
 	if err != nil {
+		zap.L().Sugar().Debugln("Error withdrawing balance:", err.Error())
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}

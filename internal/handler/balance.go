@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
 	"github.com/iubondar/gophermart/internal/models"
+	"go.uber.org/zap"
 )
 
 type BalanceRepository interface {
@@ -43,6 +44,7 @@ func (handler BalanceHandler) Balance(res http.ResponseWriter, req *http.Request
 
 	account, err := handler.repo.Account(req.Context(), userID)
 	if err != nil {
+		zap.L().Sugar().Debugln("Error query account:", err.Error())
 		http.Error(res, err.Error(), http.StatusBadRequest)
 		return
 	}
