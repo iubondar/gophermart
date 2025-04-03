@@ -250,6 +250,49 @@ func (s *Storage) Withdraw(ctx context.Context, userID uuid.UUID, orderNumber st
 	}
 
 	// Проверяем баланс пользователя
+	row := s.db.QueryRowContext(ctx, queries.GetBalance, userID)
 
-	return constants.Success, nil
+	var balance float32
+	err = row.Scan(&balance)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, fmt.Errorf("cannot find record for userID: %s", userID.String())
+		} else {
+			return 0, err
+		}
+	}
+	if balance < sum {
+		return constants.InsufficientFunds, nil
+	}
+
+	// Уменьшаем баланс на полученную сумму и делаем запись о списании в одной транзакции
+	tx, err := s.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	withdrawFromBalanceStmt, err := tx.PrepareContext(ctx, queries.WithdrawFromBalance)
+	if err != nil {
+		return 0, err
+	}
+	defer withdrawFromBalanceStmt.Close()
+
+	addWithdrawStmt, err := tx.PrepareContext(ctx, queries.AddWithdraw)
+	if err != nil {
+		return 0, err
+	}
+	defer addWithdrawStmt.Close()
+
+	_, err = withdrawFromBalanceStmt.ExecContext(ctx, sum, userID)
+	if err != nil {
+		return 0, err
+	}
+
+	_, err = addWithdrawStmt.ExecContext(ctx, userID, orderNumber, sum)
+	if err != nil {
+		return 0, err
+	}
+
+	return constants.Success, tx.Commit()
 }
