@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS orders (
     user_id uuid,
     order_number VARCHAR,
     order_status VARCHAR(20),
-    accrual integer DEFAULT 0
+    accrual float DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS order_user_id_idx ON orders (user_id);

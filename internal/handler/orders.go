@@ -69,7 +69,7 @@ func (handler OrdersHandler) Orders(res http.ResponseWriter, req *http.Request) 
 	}
 
 	res.Header().Set("Content-Type", "application/json")
-	if len(orders) == 0 {
+	if len(out) == 0 {
 		res.WriteHeader(http.StatusNoContent)
 	} else {
 		res.WriteHeader(http.StatusOK)

@@ -3,7 +3,7 @@
 SELECT 'up SQL query';
 -- +goose StatementEnd
 
-ALTER TABLE users ADD COLUMN balance integer;
+ALTER TABLE users ADD COLUMN balance float;
 
 -- +goose Down
 -- +goose StatementBegin
