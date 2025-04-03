@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const defaultPollingInterval = 5 * time.Second
+const defaultPollingInterval = 1 * time.Second
 const fetchingLimit = 10
 
 type OrderStatusFetcher interface {
