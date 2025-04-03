@@ -27,5 +27,5 @@ const (
 
 	AddWithdraw string = "INSERT INTO withdrawals (user_id, order_number, amount) VALUES ($1, $2, $3);"
 
-	WithdrawalSum string = "SELECT SUM(amount) AS withdrawal_sum FROM withdrawals WHERE user_id = $1"
+	WithdrawalSum string = "SELECT COALESCE(SUM(amount), 0) AS withdrawal_sum FROM withdrawals WHERE user_id = $1"
 )
