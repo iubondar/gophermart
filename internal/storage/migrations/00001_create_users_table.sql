@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT NOW(),
     user_id uuid PRIMARY KEY,
 	user_name VARCHAR(100) UNIQUE NOT NULL,
-    balance float,
+    balance float NOT NULL DEFAULT 0,
 	password_hash VARCHAR(100) NOT NULL
 );
 

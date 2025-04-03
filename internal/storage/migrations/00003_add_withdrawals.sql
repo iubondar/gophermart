@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS withdrawals (
     id SERIAL PRIMARY KEY,
     user_id uuid,
     order_number VARCHAR(20),
-    amount float,
+    amount float NOT NULL,
     processed_at TIMESTAMP DEFAULT NOW()
 );
 
