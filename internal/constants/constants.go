@@ -17,3 +17,11 @@ const (
 	RegisteredByAnotherUser
 	WrongOrderNumberFormat
 )
+
+type WithdrawResult int
+
+const (
+	Success WithdrawResult = iota + 1
+	InsufficientFunds
+	WrongOrderFormat
+)

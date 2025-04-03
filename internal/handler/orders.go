@@ -19,7 +19,7 @@ type OrdersRepository interface {
 type OrdersOut struct {
 	Number     string                `json:"number"`
 	Status     constants.OrderStatus `json:"status"`
-	Accrual    int                   `json:"accrual"`
+	Accrual    float32               `json:"accrual"`
 	UploadedAt string                `json:"uploaded_at"`
 }
 

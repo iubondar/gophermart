@@ -12,15 +12,17 @@ func NewRouter(storage *storage.Storage) (chi.Router, error) {
 	loginHandler := handler.NewLoginHandler(storage)
 	registerOrderHandler := handler.NewRegisterOrderHandler(storage)
 	ordersHandler := handler.NewOrdersHandler(storage)
-	withrawalsHandler := handler.NewWithdrawalsHandler(storage)
+	withdrawalsHandler := handler.NewWithdrawalsHandler(storage)
+	withdrawHandler := handler.NewWithdrawHandler(storage)
 
 	router := chi.NewRouter()
 	router.Use(logging.WithLogging)
 	router.Post("/api/user/register", registerHandler.Register)
 	router.Post("/api/user/login", loginHandler.Login)
 	router.Post("/api/user/orders", registerOrderHandler.RegisterOrder)
+	router.Post("/api/user/balance/withdraw", withdrawHandler.Withdraw)
 	router.Get("/api/user/orders", ordersHandler.Orders)
-	router.Get("/api/user/withdrawals", withrawalsHandler.Withdrawals)
+	router.Get("/api/user/withdrawals", withdrawalsHandler.Withdrawals)
 
 	return router, nil
 }

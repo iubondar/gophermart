@@ -241,3 +241,15 @@ func (s *Storage) Withdrawals(ctx context.Context, userID uuid.UUID) (withdrawal
 
 	return withdrawals, nil
 }
+
+func (s *Storage) Withdraw(ctx context.Context, userID uuid.UUID, orderNumber string, sum float32) (result constants.WithdrawResult, err error) {
+	// Валидируем номер заказа алгоритмом Луна
+	isValid := validator.ValidateLuhn(orderNumber)
+	if !isValid {
+		return constants.WrongOrderFormat, nil
+	}
+
+	// Проверяем баланс пользователя
+
+	return constants.Success, nil
+}

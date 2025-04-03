@@ -16,9 +16,9 @@ type WithdrawalsRepository interface {
 }
 
 type WithdrawalsOut struct {
-	Order       string `json:"order"`
-	Sum         int    `json:"sum"`
-	ProcessedAt string `json:"processed_at"`
+	Order       string  `json:"order"`
+	Sum         float32 `json:"sum"`
+	ProcessedAt string  `json:"processed_at"`
 }
 
 type WithdrawalsHandler struct {

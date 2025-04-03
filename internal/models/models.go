@@ -11,7 +11,7 @@ type Order struct {
 	UserID     uuid.UUID
 	Number     string
 	Status     constants.OrderStatus
-	Accrual    int
+	Accrual    float32
 	UploadedAt time.Time
 }
 
@@ -19,11 +19,11 @@ type OrderStatus struct {
 	UserID  uuid.UUID
 	Number  string
 	Status  constants.OrderStatus
-	Accrual int
+	Accrual float32
 }
 
 type Withdrawal struct {
 	Number      string
-	Sum         int
+	Sum         float32
 	ProcessedAt time.Time
 }
