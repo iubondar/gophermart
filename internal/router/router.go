@@ -14,6 +14,7 @@ func NewRouter(storage *storage.Storage) (chi.Router, error) {
 	ordersHandler := handler.NewOrdersHandler(storage)
 	withdrawalsHandler := handler.NewWithdrawalsHandler(storage)
 	withdrawHandler := handler.NewWithdrawHandler(storage)
+	balanceHandler := handler.NewBalanceHandler(storage)
 
 	router := chi.NewRouter()
 	router.Use(logging.WithLogging)
@@ -23,6 +24,7 @@ func NewRouter(storage *storage.Storage) (chi.Router, error) {
 	router.Post("/api/user/balance/withdraw", withdrawHandler.Withdraw)
 	router.Get("/api/user/orders", ordersHandler.Orders)
 	router.Get("/api/user/withdrawals", withdrawalsHandler.Withdrawals)
+	router.Get("/api/user/balance", balanceHandler.Balance)
 
 	return router, nil
 }

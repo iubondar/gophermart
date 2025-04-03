@@ -296,3 +296,32 @@ func (s *Storage) Withdraw(ctx context.Context, userID uuid.UUID, orderNumber st
 
 	return constants.Success, tx.Commit()
 }
+
+func (s *Storage) Account(ctx context.Context, userID uuid.UUID) (account models.Account, err error) {
+	// Баланс пользователя
+	row := s.db.QueryRowContext(ctx, queries.GetBalance, userID)
+
+	var balance float32
+	err = row.Scan(&balance)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Account{}, fmt.Errorf("cannot find record for userID: %s", userID.String())
+		} else {
+			return models.Account{}, err
+		}
+	}
+
+	// Сумма вывода
+	row = s.db.QueryRowContext(ctx, queries.WithdrawalSum, userID)
+
+	var withdrawalSum float32
+	err = row.Scan(&withdrawalSum)
+	if err != nil {
+		return models.Account{}, err
+	}
+
+	return models.Account{
+		Balance:       balance,
+		WithdrawalSum: withdrawalSum,
+	}, nil
+}

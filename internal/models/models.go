@@ -27,3 +27,8 @@ type Withdrawal struct {
 	Sum         float32
 	ProcessedAt time.Time
 }
+
+type Account struct {
+	Balance       float32
+	WithdrawalSum float32
+}

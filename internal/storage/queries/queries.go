@@ -19,11 +19,13 @@ const (
 
 	AddBalance string = "UPDATE users SET balance = balance + $1 WHERE user_id = $2"
 
-	Withdrawals string = "SELECT order_number, sum, processed_at FROM withdrawals WHERE user_id = $1 ORDER BY processed_at DESC;"
+	Withdrawals string = "SELECT order_number, amount, processed_at FROM withdrawals WHERE user_id = $1 ORDER BY processed_at DESC;"
 
 	GetBalance string = "SELECT balance FROM users WHERE user_id = $1;"
 
 	WithdrawFromBalance string = "UPDATE users SET balance = balance - $1 WHERE user_id = $2"
 
-	AddWithdraw string = "INSERT INTO withdrawals (user_id, order_number, sum) VALUES ($1, $2, $3);"
+	AddWithdraw string = "INSERT INTO withdrawals (user_id, order_number, amount) VALUES ($1, $2, $3);"
+
+	WithdrawalSum string = "SELECT SUM(amount) AS withdrawal_sum FROM withdrawals WHERE user_id = $1"
 )
