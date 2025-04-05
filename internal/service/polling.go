@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/iubondar/gophermart/internal/models"
@@ -12,75 +13,132 @@ const defaultPollingInterval = 1 * time.Second
 const fetchingLimit = 10
 
 type OrderStatusFetcher interface {
-	FetchOrderStatus(order models.Order) (out models.OrderStatus, err error)
+	FetchOrderStatus(ctx context.Context, order models.Order) (out models.OrderStatus, err error)
 }
 
 type OrdersRepository interface {
 	OrdersToUpdate(ctx context.Context, limit int) (orders []models.Order, err error)
 	UpdateOrders(ctx context.Context, orders []models.OrderStatus) error
 }
+
+type Result struct {
+	Status models.OrderStatus
+	Err    error
+}
+
 type PollingService struct {
-	fetcher         OrderStatusFetcher
-	repo            OrdersRepository
-	pollingInterval time.Duration
-	doneCh          chan struct{}
+	interval    time.Duration
+	concurrency int
+	fetcher     OrderStatusFetcher
+	repo        OrdersRepository
+	done        chan struct{}
+	wg          sync.WaitGroup
+	ctx         context.Context
+	cancel      context.CancelFunc
 }
 
-func NewPollingService(fetcher OrderStatusFetcher, repo OrdersRepository, pollingInterval time.Duration) *PollingService {
+func NewPollingService(
+	interval time.Duration,
+	concurrency int,
+	fetcher OrderStatusFetcher,
+	repo OrdersRepository,
+) *PollingService {
+	ctx, cancel := context.WithCancel(context.Background())
 	return &PollingService{
-		fetcher:         fetcher,
-		repo:            repo,
-		pollingInterval: pollingInterval,
-		doneCh:          make(chan struct{}),
+		interval:    interval,
+		concurrency: concurrency,
+		fetcher:     fetcher,
+		repo:        repo,
+		done:        make(chan struct{}),
+		ctx:         ctx,
+		cancel:      cancel,
 	}
 }
 
-func (s PollingService) Start() {
-	if s.pollingInterval == 0 {
-		s.pollingInterval = defaultPollingInterval
+func (ps *PollingService) Start() {
+	if ps.interval == 0 {
+		ps.interval = defaultPollingInterval
 	}
-	ticker := time.NewTicker(s.pollingInterval)
+
+	if ps.concurrency == 0 {
+		ps.concurrency = fetchingLimit
+	}
+
+	ticker := time.NewTicker(ps.interval)
 
 	go func() {
 		for {
 			select {
-			case <-s.doneCh:
+			case <-ticker.C:
+				ps.runPollingCycle()
+			case <-ps.done:
 				ticker.Stop()
 				return
-			case <-ticker.C:
-				s.updateNextOrders(fetchingLimit)
 			}
 		}
 	}()
 }
 
-func (s PollingService) Stop() {
-	close(s.doneCh)
+func (ps *PollingService) Stop() {
+	close(ps.done)
+	ps.cancel()
+	ps.wg.Wait()
 }
 
-func (s PollingService) updateNextOrders(limit int) {
+func (ps *PollingService) runPollingCycle() {
 	// извлекаем из репозитория номера заказов для обновления
-	orders, err := s.repo.OrdersToUpdate(context.Background(), limit)
+	orders, err := ps.repo.OrdersToUpdate(ps.ctx, fetchingLimit)
 	if err != nil {
 		zap.L().Sugar().Debugln("Error fetching orders to update status, error: ", err.Error())
 		return
 	}
 
-	// запрашиваем в цикле статус из Accrual системы
-	var orderStatuses []models.OrderStatus
-	for _, order := range orders {
-		orderStatus, err := s.fetcher.FetchOrderStatus(order)
-		if err != nil {
-			zap.L().Sugar().Debugln("Error fetching orders to update status, error: ", err.Error())
-			return
+	// Создаём input и output каналы
+	ordersCh := make(chan models.Order, len(orders))
+	resultCh := make(chan Result, len(orders))
+
+	// Заполняем input канал заказами для обновления статуса
+	go func() {
+		defer close(ordersCh)
+		for _, order := range orders {
+			ordersCh <- order
 		}
-		orderStatuses = append(orderStatuses, orderStatus)
+	}()
+
+	// Fan-out: запускаем воркеры
+	ps.wg.Add(ps.concurrency)
+	for range ps.concurrency {
+		go ps.worker(ordersCh, resultCh)
 	}
 
-	// обновляем данные по заказам и баланс пользователя
-	err = s.repo.UpdateOrders(context.Background(), orderStatuses)
-	if err != nil {
-		zap.L().Sugar().Debugln("Error updating order statuses, error: ", err.Error())
-		return
+	// Fan-in: собираем все результаты
+	go func() {
+		ps.wg.Wait()    // ждём завершения всех воркеров
+		close(resultCh) // закрываем канал
+
+		// Обрабатываем все результаты после завершения
+		var orderStatuses []models.OrderStatus
+		for result := range resultCh {
+			if result.Err != nil {
+				zap.L().Sugar().Debugln("Got error: ", err.Error())
+			} else {
+				orderStatuses = append(orderStatuses, result.Status)
+			}
+		}
+
+		err = ps.repo.UpdateOrders(ps.ctx, orderStatuses)
+		if err != nil {
+			zap.L().Sugar().Debugln("Error updating order statuses, error: ", err.Error())
+			return
+		}
+	}()
+}
+
+func (ps *PollingService) worker(ordersCh <-chan models.Order, resultsCh chan<- Result) {
+	defer ps.wg.Done()
+
+	for order := range ordersCh {
+		status, err := ps.fetcher.FetchOrderStatus(ps.ctx, order)
+		resultsCh <- Result{Status: status, Err: err}
 	}
 }
