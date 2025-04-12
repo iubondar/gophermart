@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/iubondar/gophermart/internal/auth"
-	"github.com/iubondar/gophermart/internal/handler/mocks"
+	"github.com/iubondar/gophermart/internal/mocks"
 	"github.com/iubondar/gophermart/internal/testhelpers"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

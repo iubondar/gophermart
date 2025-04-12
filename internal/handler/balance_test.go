@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
-	"github.com/iubondar/gophermart/internal/handler/mocks"
+	"github.com/iubondar/gophermart/internal/mocks"
 	"github.com/iubondar/gophermart/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

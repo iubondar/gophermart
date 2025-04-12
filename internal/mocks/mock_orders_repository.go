@@ -13,6 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	uuid "github.com/google/uuid"
 	models "github.com/iubondar/gophermart/internal/models"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -39,6 +40,21 @@ func NewMockOrdersRepository(ctrl *gomock.Controller) *MockOrdersRepository {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockOrdersRepository) EXPECT() *MockOrdersRepositoryMockRecorder {
 	return m.recorder
+}
+
+// Orders mocks base method.
+func (m *MockOrdersRepository) Orders(ctx context.Context, userID uuid.UUID) ([]models.Order, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Orders", ctx, userID)
+	ret0, _ := ret[0].([]models.Order)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Orders indicates an expected call of Orders.
+func (mr *MockOrdersRepositoryMockRecorder) Orders(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Orders", reflect.TypeOf((*MockOrdersRepository)(nil).Orders), ctx, userID)
 }
 
 // OrdersToUpdate mocks base method.

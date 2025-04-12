@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_id_idx ON users (user_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS user_name_idx ON users (user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS user_name_idx ON users (user_name);
 
 -- +goose Down
 -- +goose StatementBegin
