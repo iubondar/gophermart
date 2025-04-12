@@ -109,12 +109,15 @@ func (ps *PollingService) runPollingCycle() {
 		var orderStatuses []models.OrderStatus
 		for result := range resultCh {
 			if result.Err != nil {
-				zap.L().Sugar().Debugln("Got error: ", err.Error())
+				zap.L().Sugar().Debugln("Got error from worker: ", result.Err.Error())
+				// Even if there's an error, we still want to include the status in the update
+				orderStatuses = append(orderStatuses, result.Status)
 			} else {
 				orderStatuses = append(orderStatuses, result.Status)
 			}
 		}
 
+		// Always call UpdateOrders, even if there are no statuses to update
 		err = ps.repo.UpdateOrders(ps.ctx, orderStatuses)
 		if err != nil {
 			zap.L().Sugar().Debugln("Error updating order statuses, error: ", err.Error())
