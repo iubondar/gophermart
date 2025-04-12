@@ -102,7 +102,9 @@ func TestLoginHandler_Login(t *testing.T) {
 			assert.Equal(t, tt.expectedStatus, recorder.Code)
 
 			if tt.expectedStatus == http.StatusOK {
-				cookies := recorder.Result().Cookies()
+				resp := recorder.Result()
+				defer resp.Body.Close()
+				cookies := resp.Cookies()
 				assert.Len(t, cookies, 1)
 				assert.Equal(t, auth.AuthCookieName, cookies[0].Name)
 				assert.NotEmpty(t, cookies[0].Value)

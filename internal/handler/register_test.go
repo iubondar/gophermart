@@ -125,7 +125,9 @@ func TestRegisterHandler_Register(t *testing.T) {
 
 			// If successful registration, check for auth cookie
 			if tt.expectedStatus == http.StatusOK {
-				cookies := rr.Result().Cookies()
+				resp := rr.Result()
+				defer resp.Body.Close()
+				cookies := resp.Cookies()
 				assert.NotEmpty(t, cookies)
 				authCookie := cookies[0]
 				assert.Equal(t, auth.AuthCookieName, authCookie.Name)
