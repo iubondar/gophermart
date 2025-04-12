@@ -9,9 +9,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const defaultPollingInterval = 1 * time.Second
-const fetchingLimit = 10
-
 type OrderStatusFetcher interface {
 	FetchOrderStatus(ctx context.Context, order models.Order) (out models.OrderStatus, err error)
 }
@@ -56,14 +53,6 @@ func NewPollingService(
 }
 
 func (ps *PollingService) Start() {
-	if ps.interval == 0 {
-		ps.interval = defaultPollingInterval
-	}
-
-	if ps.concurrency == 0 {
-		ps.concurrency = fetchingLimit
-	}
-
 	ticker := time.NewTicker(ps.interval)
 
 	go func() {
@@ -87,7 +76,7 @@ func (ps *PollingService) Stop() {
 
 func (ps *PollingService) runPollingCycle() {
 	// извлекаем из репозитория номера заказов для обновления
-	orders, err := ps.repo.OrdersToUpdate(ps.ctx, fetchingLimit)
+	orders, err := ps.repo.OrdersToUpdate(ps.ctx, ps.concurrency)
 	if err != nil {
 		zap.L().Sugar().Debugln("Error fetching orders to update status, error: ", err.Error())
 		return

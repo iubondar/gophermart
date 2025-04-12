@@ -30,7 +30,12 @@ func main() {
 
 	accrualClient := client.NewAccrualClient(config.AccrualSystemAddress)
 
-	pollingService := service.NewPollingService(0, 0, accrualClient, storage)
+	pollingService := service.NewPollingService(
+		config.PollingInterval,
+		config.FetchingLimit,
+		accrualClient,
+		storage,
+	)
 	pollingService.Start()
 
 	router, err := router.NewRouter(storage)
