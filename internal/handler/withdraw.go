@@ -58,6 +58,17 @@ func (handler WithdrawHandler) Withdraw(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
+	// Validate input
+	if in.Order == "" {
+		http.Error(res, "Order number is required", http.StatusBadRequest)
+		return
+	}
+
+	if in.Sum <= 0 {
+		http.Error(res, "Sum must be greater than 0", http.StatusBadRequest)
+		return
+	}
+
 	result, err := handler.withdrawer.Withdraw(req.Context(), userID, in.Order, in.Sum)
 	if err != nil {
 		zap.L().Sugar().Debugln("Error withdrawing balance:", err.Error())
