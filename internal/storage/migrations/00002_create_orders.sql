@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS orders (
     uploaded_at TIMESTAMP DEFAULT NOW(),
     id SERIAL PRIMARY KEY,
     user_id uuid,
-    order_number VARCHAR,
+    order_number VARCHAR UNIQUE,
     order_status VARCHAR(20),
     accrual float DEFAULT 0
 );

@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/constants"
+	"github.com/iubondar/gophermart/internal/models"
 	"github.com/iubondar/gophermart/internal/testhelpers"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -161,7 +162,7 @@ func (s *StorageTestSuite) TestOrders() {
 	})
 }
 
-func (s *StorageTestSuite) TestWithdraw() {
+func (s *StorageTestSuite) TestWithdrawals() {
 	ctx := context.Background()
 	userID := uuid.New()
 	orderNumber := "12345678903"
@@ -173,25 +174,27 @@ func (s *StorageTestSuite) TestWithdraw() {
 	require.True(s.T(), ok)
 
 	// Add balance to user
-	_, err = s.storage.db.ExecContext(ctx, "UPDATE users SET balance = $1 WHERE user_id = $2", sum, userID)
+	_, err = s.storage.db.ExecContext(ctx, "UPDATE users SET balance = $1 WHERE user_id = $2", sum*2, userID)
 	require.NoError(s.T(), err)
 
-	s.Run("successful withdrawal", func() {
+	s.Run("get withdrawals for user with no withdrawals", func() {
+		withdrawals, err := s.storage.Withdrawals(ctx, userID)
+		assert.NoError(s.T(), err)
+		assert.Empty(s.T(), withdrawals)
+	})
+
+	s.Run("get withdrawals after withdrawal", func() {
+		// Make a withdrawal
 		result, err := s.storage.Withdraw(ctx, userID, orderNumber, sum)
-		assert.NoError(s.T(), err)
-		assert.Equal(s.T(), constants.Success, result)
-	})
+		require.NoError(s.T(), err)
+		require.Equal(s.T(), constants.Success, result)
 
-	s.Run("insufficient funds", func() {
-		result, err := s.storage.Withdraw(ctx, userID, orderNumber, sum+1)
+		withdrawals, err := s.storage.Withdrawals(ctx, userID)
 		assert.NoError(s.T(), err)
-		assert.Equal(s.T(), constants.InsufficientFunds, result)
-	})
-
-	s.Run("invalid order number", func() {
-		result, err := s.storage.Withdraw(ctx, userID, "12345678901", sum)
-		assert.NoError(s.T(), err)
-		assert.Equal(s.T(), constants.WrongOrderFormat, result)
+		assert.Len(s.T(), withdrawals, 1)
+		assert.Equal(s.T(), orderNumber, withdrawals[0].Number)
+		assert.Equal(s.T(), sum, withdrawals[0].Sum)
+		assert.NotZero(s.T(), withdrawals[0].ProcessedAt)
 	})
 }
 
@@ -218,5 +221,162 @@ func (s *StorageTestSuite) TestAccount() {
 	s.Run("get non-existent account", func() {
 		_, err := s.storage.Account(ctx, uuid.New())
 		assert.Error(s.T(), err)
+	})
+
+	s.Run("get account with withdrawals", func() {
+		// Make a withdrawal
+		orderNumber := "12345678903"
+		sum := float32(50.0)
+		result, err := s.storage.Withdraw(ctx, userID, orderNumber, sum)
+		require.NoError(s.T(), err)
+		require.Equal(s.T(), constants.Success, result)
+
+		account, err := s.storage.Account(ctx, userID)
+		assert.NoError(s.T(), err)
+		assert.Equal(s.T(), balance-sum, account.Balance)
+		assert.Equal(s.T(), sum, account.WithdrawalSum)
+	})
+}
+
+func (s *StorageTestSuite) TestOrdersToUpdate() {
+	ctx := context.Background()
+	userID := uuid.New()
+	orderNumber := "12345678903"
+
+	// Register user and order
+	_, err := s.storage.Register(ctx, userID, "testuser", "password")
+	require.NoError(s.T(), err)
+	_, err = s.storage.RegisterOrder(ctx, userID, orderNumber)
+	require.NoError(s.T(), err)
+
+	s.Run("get orders to update", func() {
+		orders, err := s.storage.OrdersToUpdate(ctx, 10)
+		assert.NoError(s.T(), err)
+		assert.Len(s.T(), orders, 1)
+		assert.Equal(s.T(), orderNumber, orders[0].Number)
+		assert.Equal(s.T(), constants.OrderStatusNew, orders[0].Status)
+	})
+
+	s.Run("get orders to update with limit", func() {
+		// Add more orders
+		orderNumber2 := "12345678904"
+		_, err = s.storage.RegisterOrder(ctx, userID, orderNumber2)
+		require.NoError(s.T(), err)
+
+		orders, err := s.storage.OrdersToUpdate(ctx, 1)
+		assert.NoError(s.T(), err)
+		assert.Len(s.T(), orders, 1)
+	})
+}
+
+func (s *StorageTestSuite) TestUpdateOrders() {
+	ctx := context.Background()
+	userID := uuid.New()
+	orderNumber := "12345678903"
+	accrual := float32(100.0)
+
+	// Register user and order
+	_, err := s.storage.Register(ctx, userID, "testuser", "password")
+	require.NoError(s.T(), err)
+	_, err = s.storage.RegisterOrder(ctx, userID, orderNumber)
+	require.NoError(s.T(), err)
+
+	s.Run("update order status", func() {
+		orders := []models.OrderStatus{
+			{
+				UserID:  userID,
+				Number:  orderNumber,
+				Status:  constants.OrderStatusProcessed,
+				Accrual: accrual,
+			},
+		}
+
+		err := s.storage.UpdateOrders(ctx, orders)
+		assert.NoError(s.T(), err)
+
+		// Verify order status and balance
+		account, err := s.storage.Account(ctx, userID)
+		assert.NoError(s.T(), err)
+		assert.Equal(s.T(), accrual, account.Balance)
+
+		userOrders, err := s.storage.Orders(ctx, userID)
+		assert.NoError(s.T(), err)
+		assert.Len(s.T(), userOrders, 1)
+		assert.Equal(s.T(), constants.OrderStatusProcessed, userOrders[0].Status)
+		assert.Equal(s.T(), accrual, userOrders[0].Accrual)
+	})
+
+	s.Run("update multiple orders", func() {
+		// Clear balance first
+		_, err = s.storage.db.ExecContext(ctx, "UPDATE users SET balance = 0 WHERE user_id = $1", userID)
+		require.NoError(s.T(), err)
+
+		// Add another order
+		orderNumber2 := "12345678904"
+		accrual2 := float32(50.0)
+		_, err = s.storage.RegisterOrder(ctx, userID, orderNumber2)
+		require.NoError(s.T(), err)
+
+		orders := []models.OrderStatus{
+			{
+				UserID:  userID,
+				Number:  orderNumber,
+				Status:  constants.OrderStatusProcessed,
+				Accrual: accrual,
+			},
+			{
+				UserID:  userID,
+				Number:  orderNumber2,
+				Status:  constants.OrderStatusProcessed,
+				Accrual: accrual2,
+			},
+		}
+
+		err := s.storage.UpdateOrders(ctx, orders)
+		assert.NoError(s.T(), err)
+
+		// Verify total balance
+		account, err := s.storage.Account(ctx, userID)
+		assert.NoError(s.T(), err)
+		assert.Equal(s.T(), accrual+accrual2, account.Balance)
+	})
+}
+
+func (s *StorageTestSuite) TestWithdraw() {
+	ctx := context.Background()
+	userID := uuid.New()
+	orderNumber := "12345678903"
+	sum := float32(100.0)
+
+	// Register user and add balance
+	ok, err := s.storage.Register(ctx, userID, "testuser", "password")
+	require.NoError(s.T(), err)
+	require.True(s.T(), ok)
+
+	// Add balance to user
+	_, err = s.storage.db.ExecContext(ctx, "UPDATE users SET balance = $1 WHERE user_id = $2", sum*2, userID)
+	require.NoError(s.T(), err)
+
+	s.Run("successful withdrawal", func() {
+		result, err := s.storage.Withdraw(ctx, userID, orderNumber, sum)
+		assert.NoError(s.T(), err)
+		assert.Equal(s.T(), constants.Success, result)
+
+		// Verify balance was updated
+		account, err := s.storage.Account(ctx, userID)
+		assert.NoError(s.T(), err)
+		assert.Equal(s.T(), sum, account.Balance) // Initial balance was sum*2, withdrew sum
+	})
+
+	s.Run("insufficient funds", func() {
+		result, err := s.storage.Withdraw(ctx, userID, orderNumber, sum*3)
+		assert.NoError(s.T(), err)
+		assert.Equal(s.T(), constants.InsufficientFunds, result)
+	})
+
+	s.Run("invalid order number", func() {
+		result, err := s.storage.Withdraw(ctx, userID, "12345678901", sum)
+		assert.NoError(s.T(), err)
+		assert.Equal(s.T(), constants.WrongOrderFormat, result)
 	})
 }

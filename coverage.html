@@ -59,37 +59,59 @@
 				
 				<option value="file1">github.com/iubondar/gophermart/internal/auth/auth.go (77.4%)</option>
 				
-				<option value="file2">github.com/iubondar/gophermart/internal/client/accrual.go (0.0%)</option>
+				<option value="file2">github.com/iubondar/gophermart/internal/client/accrual.go (100.0%)</option>
 				
 				<option value="file3">github.com/iubondar/gophermart/internal/compress/gzip.go (73.9%)</option>
 				
 				<option value="file4">github.com/iubondar/gophermart/internal/config/config.go (86.7%)</option>
 				
-				<option value="file5">github.com/iubondar/gophermart/internal/handler/balance.go (0.0%)</option>
+				<option value="file5">github.com/iubondar/gophermart/internal/handler/balance.go (81.0%)</option>
 				
-				<option value="file6">github.com/iubondar/gophermart/internal/handler/login.go (0.0%)</option>
+				<option value="file6">github.com/iubondar/gophermart/internal/handler/login.go (83.3%)</option>
 				
-				<option value="file7">github.com/iubondar/gophermart/internal/handler/orders.go (0.0%)</option>
+				<option value="file7">github.com/iubondar/gophermart/internal/handler/mocks/mock_orders_repository.go (0.0%)</option>
 				
-				<option value="file8">github.com/iubondar/gophermart/internal/handler/register.go (0.0%)</option>
+				<option value="file8">github.com/iubondar/gophermart/internal/handler/orders.go (92.0%)</option>
 				
-				<option value="file9">github.com/iubondar/gophermart/internal/handler/register_order.go (0.0%)</option>
+				<option value="file9">github.com/iubondar/gophermart/internal/handler/register.go (87.9%)</option>
 				
-				<option value="file10">github.com/iubondar/gophermart/internal/handler/withdraw.go (0.0%)</option>
+				<option value="file10">github.com/iubondar/gophermart/internal/handler/register_order.go (95.5%)</option>
 				
-				<option value="file11">github.com/iubondar/gophermart/internal/handler/withdrawals.go (0.0%)</option>
+				<option value="file11">github.com/iubondar/gophermart/internal/handler/withdraw.go (97.0%)</option>
 				
-				<option value="file12">github.com/iubondar/gophermart/internal/logging/logging.go (0.0%)</option>
+				<option value="file12">github.com/iubondar/gophermart/internal/handler/withdrawals.go (92.0%)</option>
 				
-				<option value="file13">github.com/iubondar/gophermart/internal/router/router.go (0.0%)</option>
+				<option value="file13">github.com/iubondar/gophermart/internal/logging/logging.go (94.4%)</option>
 				
-				<option value="file14">github.com/iubondar/gophermart/internal/server/server.go (0.0%)</option>
+				<option value="file14">github.com/iubondar/gophermart/internal/mocks/mock_balance_repository.go (0.0%)</option>
 				
-				<option value="file15">github.com/iubondar/gophermart/internal/service/polling.go (0.0%)</option>
+				<option value="file15">github.com/iubondar/gophermart/internal/mocks/mock_login_checker.go (0.0%)</option>
 				
-				<option value="file16">github.com/iubondar/gophermart/internal/storage/storage.go (0.0%)</option>
+				<option value="file16">github.com/iubondar/gophermart/internal/mocks/mock_order_registrar.go (0.0%)</option>
 				
-				<option value="file17">github.com/iubondar/gophermart/internal/validator/validator.go (100.0%)</option>
+				<option value="file17">github.com/iubondar/gophermart/internal/mocks/mock_order_status_fetcher.go (0.0%)</option>
+				
+				<option value="file18">github.com/iubondar/gophermart/internal/mocks/mock_orders_repository.go (0.0%)</option>
+				
+				<option value="file19">github.com/iubondar/gophermart/internal/mocks/mock_user_registrar.go (0.0%)</option>
+				
+				<option value="file20">github.com/iubondar/gophermart/internal/mocks/mock_withdrawals_repository.go (0.0%)</option>
+				
+				<option value="file21">github.com/iubondar/gophermart/internal/mocks/mock_withdrawer.go (0.0%)</option>
+				
+				<option value="file22">github.com/iubondar/gophermart/internal/router/router.go (0.0%)</option>
+				
+				<option value="file23">github.com/iubondar/gophermart/internal/server/server.go (66.7%)</option>
+				
+				<option value="file24">github.com/iubondar/gophermart/internal/service/polling.go (95.2%)</option>
+				
+				<option value="file25">github.com/iubondar/gophermart/internal/storage/storage.go (73.7%)</option>
+				
+				<option value="file26">github.com/iubondar/gophermart/internal/testhelpers/container.go (0.0%)</option>
+				
+				<option value="file27">github.com/iubondar/gophermart/internal/testhelpers/readers.go (0.0%)</option>
+				
+				<option value="file28">github.com/iubondar/gophermart/internal/validator/validator.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -169,6 +191,7 @@ import (
 
 const secretKey = "supersecretkey"
 const AuthCookieName = "Authorization"
+const UserIDKey = "userID"
 
 // claims — структура утверждений, которая включает стандартные утверждения и
 // одно пользовательское UserID
@@ -178,7 +201,7 @@ type claims struct {
 }
 
 func SetNewAuthCookie(userID uuid.UUID, res http.ResponseWriter) error <span class="cov8" title="1">{
-        jwtString, err := buildJWTString(userID)
+        jwtString, err := BuildJWTString(userID)
         if err != nil </span><span class="cov0" title="0">{
                 zap.L().Sugar().Debugln("Error building jwtString", err.Error())
                 return err
@@ -199,7 +222,7 @@ func SetNewAuthCookie(userID uuid.UUID, res http.ResponseWriter) error <span cla
 }
 
 // BuildJWTString создаёт токен и возвращает его в виде строки.
-func buildJWTString(userID uuid.UUID) (string, error) <span class="cov8" title="1">{
+func BuildJWTString(userID uuid.UUID) (string, error) <span class="cov8" title="1">{
         // создаём новый токен с алгоритмом подписи HS256 и утверждениями — Claims
         token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims{
                 RegisteredClaims: jwt.RegisteredClaims{},
@@ -279,7 +302,7 @@ type (
         }
 )
 
-func NewAccrualClient(accrualSystemAddress string) *AccrualClient <span class="cov0" title="0">{
+func NewAccrualClient(accrualSystemAddress string) *AccrualClient <span class="cov8" title="1">{
         client := resty.New().SetBaseURL(accrualSystemAddress)
 
         return &amp;AccrualClient{
@@ -287,7 +310,7 @@ func NewAccrualClient(accrualSystemAddress string) *AccrualClient <span class="c
         }
 }</span>
 
-func (c AccrualClient) FetchOrderStatus(ctx context.Context, order models.Order) (out models.OrderStatus, err error) <span class="cov0" title="0">{
+func (c AccrualClient) FetchOrderStatus(ctx context.Context, order models.Order) (out models.OrderStatus, err error) <span class="cov8" title="1">{
         var result accrualStatus
         resp, err := c.httpc.R().SetContext(ctx).SetResult(&amp;result).Get("/api/orders/" + order.Number)
 
@@ -300,43 +323,48 @@ func (c AccrualClient) FetchOrderStatus(ctx context.Context, order models.Order)
                 "Body:\n", resp,
         )
 
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 zap.L().Sugar().Debugln("Error fetching order status, number ", order.Number, ", error: ", err.Error())
                 return models.OrderStatus{}, err
         }</span>
 
-        <span class="cov0" title="0">if resp.StatusCode() &gt;= 400 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if resp.StatusCode() &gt;= 400 </span><span class="cov8" title="1">{
                 return models.OrderStatus{}, fmt.Errorf("fetching order status: %s", resp.Status())
         }</span>
 
-        <span class="cov0" title="0">if resp.StatusCode() == http.StatusNoContent </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if resp.StatusCode() == http.StatusNoContent </span><span class="cov8" title="1">{
                 return models.OrderStatus{
                         UserID:  order.UserID,
-                        Number:  result.Order,
+                        Number:  order.Number,
                         Status:  constants.OrderStatusNew,
                         Accrual: 0,
                 }, nil
         }</span>
 
-        <span class="cov0" title="0">return models.OrderStatus{
+        // Validate that the order number in response matches the request
+        <span class="cov8" title="1">if result.Order != order.Number </span><span class="cov8" title="1">{
+                return models.OrderStatus{}, fmt.Errorf("order number mismatch: expected %s, got %s", order.Number, result.Order)
+        }</span>
+
+        <span class="cov8" title="1">return models.OrderStatus{
                 UserID:  order.UserID,
-                Number:  result.Order,
+                Number:  order.Number,
                 Status:  mapAccrualStatus(result.Status),
                 Accrual: result.Accrual,
         }, nil</span>
 }
 
-func mapAccrualStatus(accrualStatus string) constants.OrderStatus <span class="cov0" title="0">{
+func mapAccrualStatus(accrualStatus string) constants.OrderStatus <span class="cov8" title="1">{
         switch accrualStatus </span>{
-        case "REGISTERED":<span class="cov0" title="0">
+        case "REGISTERED":<span class="cov8" title="1">
                 return constants.OrderStatusProcessing</span>
-        case "INVALID":<span class="cov0" title="0">
+        case "INVALID":<span class="cov8" title="1">
                 return constants.OrderStatusInvalid</span>
-        case "PROCESSING":<span class="cov0" title="0">
+        case "PROCESSING":<span class="cov8" title="1">
                 return constants.OrderStatusProcessing</span>
-        case "PROCESSED":<span class="cov0" title="0">
+        case "PROCESSED":<span class="cov8" title="1">
                 return constants.OrderStatusProcessed</span>
-        default:<span class="cov0" title="0">
+        default:<span class="cov8" title="1">
                 return constants.OrderStatusNew</span>
         }
 }
@@ -577,32 +605,32 @@ type BalanceHandler struct {
         repo BalanceRepository
 }
 
-func NewBalanceHandler(repo BalanceRepository) BalanceHandler <span class="cov0" title="0">{
+func NewBalanceHandler(repo BalanceRepository) BalanceHandler <span class="cov8" title="1">{
         return BalanceHandler{
                 repo: repo,
         }
 }</span>
 
-func (handler BalanceHandler) Balance(res http.ResponseWriter, req *http.Request) <span class="cov0" title="0">{
-        if req.Method != http.MethodGet </span><span class="cov0" title="0">{
+func (handler BalanceHandler) Balance(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodGet </span><span class="cov8" title="1">{
                 http.Error(res, "Only GET requests are allowed!", http.StatusMethodNotAllowed)
                 return
         }</span>
 
-        <span class="cov0" title="0">userID, err := auth.GetUserIDFromReq(req)
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
         if err != nil </span><span class="cov0" title="0">{
                 http.Error(res, err.Error(), http.StatusUnauthorized)
                 return
         }</span>
 
-        <span class="cov0" title="0">account, err := handler.repo.Account(req.Context(), userID)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">account, err := handler.repo.Account(req.Context(), userID)
+        if err != nil </span><span class="cov8" title="1">{
                 zap.L().Sugar().Debugln("Error query account:", err.Error())
                 http.Error(res, err.Error(), http.StatusBadRequest)
                 return
         }</span>
 
-        <span class="cov0" title="0">out := BalanceOut{
+        <span class="cov8" title="1">out := BalanceOut{
                 Current:   account.Balance,
                 Withdrawn: account.WithdrawalSum,
         }
@@ -613,7 +641,7 @@ func (handler BalanceHandler) Balance(res http.ResponseWriter, req *http.Request
                 return
         }</span>
 
-        <span class="cov0" title="0">res.Header().Set("Content-Type", "application/json")
+        <span class="cov8" title="1">res.Header().Set("Content-Type", "application/json")
         res.WriteHeader(http.StatusOK)
         res.Write(resp)</span>
 }
@@ -644,19 +672,19 @@ type LoginHandler struct {
         checker LoginChecker
 }
 
-func NewLoginHandler(checker LoginChecker) *LoginHandler <span class="cov0" title="0">{
+func NewLoginHandler(checker LoginChecker) *LoginHandler <span class="cov8" title="1">{
         return &amp;LoginHandler{
                 checker: checker,
         }
 }</span>
 
-func (handler LoginHandler) Login(res http.ResponseWriter, req *http.Request) <span class="cov0" title="0">{
-        if req.Method != http.MethodPost </span><span class="cov0" title="0">{
+func (handler LoginHandler) Login(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodPost </span><span class="cov8" title="1">{
                 http.Error(res, "Only POST requests are allowed!", http.StatusMethodNotAllowed)
                 return
         }</span>
 
-        <span class="cov0" title="0">var in LoginIn
+        <span class="cov8" title="1">var in LoginIn
         var buf bytes.Buffer
         // читаем тело запроса
         _, err := buf.ReadFrom(req.Body)
@@ -666,18 +694,18 @@ func (handler LoginHandler) Login(res http.ResponseWriter, req *http.Request) <s
         }</span>
 
         // десериализуем JSON
-        <span class="cov0" title="0">if err = json.Unmarshal(buf.Bytes(), &amp;in); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err = json.Unmarshal(buf.Bytes(), &amp;in); err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusBadRequest)
                 return
         }</span>
 
-        <span class="cov0" title="0">userID, err := handler.checker.CheckLogin(req.Context(), in.Login, in.Password)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">userID, err := handler.checker.CheckLogin(req.Context(), in.Login, in.Password)
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusInternalServerError)
                 return
         }</span>
 
-        <span class="cov0" title="0">if userID != uuid.Nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if userID != uuid.Nil </span><span class="cov8" title="1">{
                 // обновляем авторизационную куку и её срок действия
                 err = auth.SetNewAuthCookie(userID, res)
                 if err != nil </span><span class="cov0" title="0">{
@@ -685,14 +713,66 @@ func (handler LoginHandler) Login(res http.ResponseWriter, req *http.Request) <s
                         return
                 }</span>
 
-                <span class="cov0" title="0">res.WriteHeader(http.StatusOK)</span>
-        } else<span class="cov0" title="0"> {
+                <span class="cov8" title="1">res.WriteHeader(http.StatusOK)</span>
+        } else<span class="cov8" title="1"> {
                 res.WriteHeader(http.StatusUnauthorized)
         }</span>
 }
 </pre>
 		
-		<pre class="file" id="file7" style="display: none">package handler
+		<pre class="file" id="file7" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/orders.go
+
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        gomock "go.uber.org/mock/gomock"
+        models "github.com/iubondar/gophermart/internal/models"
+)
+
+// MockOrdersRepository is a mock of OrdersRepository interface.
+type MockOrdersRepository struct {
+        ctrl     *gomock.Controller
+        recorder *MockOrdersRepositoryMockRecorder
+}
+
+// MockOrdersRepositoryMockRecorder is the mock recorder for MockOrdersRepository.
+type MockOrdersRepositoryMockRecorder struct {
+        mock *MockOrdersRepository
+}
+
+// NewMockOrdersRepository creates a new mock instance.
+func NewMockOrdersRepository(ctrl *gomock.Controller) *MockOrdersRepository <span class="cov0" title="0">{
+        mock := &amp;MockOrdersRepository{ctrl: ctrl}
+        mock.recorder = &amp;MockOrdersRepositoryMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrdersRepository) EXPECT() *MockOrdersRepositoryMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Orders mocks base method.
+func (m *MockOrdersRepository) Orders(ctx context.Context, userID uuid.UUID) ([]models.Order, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Orders", ctx, userID)
+        ret0, _ := ret[0].([]models.Order)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Orders indicates an expected call of Orders.
+func (mr *MockOrdersRepositoryMockRecorder) Orders(ctx, userID interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Orders", reflect.TypeOf((*MockOrdersRepository)(nil).Orders), ctx, userID)
+}</span> </pre>
+		
+		<pre class="file" id="file8" style="display: none">package handler
 
 import (
         "context"
@@ -721,32 +801,32 @@ type OrdersHandler struct {
         repo OrdersRepository
 }
 
-func NewOrdersHandler(repo OrdersRepository) OrdersHandler <span class="cov0" title="0">{
+func NewOrdersHandler(repo OrdersRepository) OrdersHandler <span class="cov8" title="1">{
         return OrdersHandler{
                 repo: repo,
         }
 }</span>
 
-func (handler OrdersHandler) Orders(res http.ResponseWriter, req *http.Request) <span class="cov0" title="0">{
-        if req.Method != http.MethodGet </span><span class="cov0" title="0">{
+func (handler OrdersHandler) Orders(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodGet </span><span class="cov8" title="1">{
                 http.Error(res, "Only GET requests are allowed!", http.StatusMethodNotAllowed)
                 return
         }</span>
 
-        <span class="cov0" title="0">userID, err := auth.GetUserIDFromReq(req)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusUnauthorized)
                 return
         }</span>
 
-        <span class="cov0" title="0">orders, err := handler.repo.Orders(req.Context(), userID)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">orders, err := handler.repo.Orders(req.Context(), userID)
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusBadRequest)
                 return
         }</span>
 
-        <span class="cov0" title="0">out := make([]OrdersOut, 0, len(orders))
-        for i := range orders </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">out := make([]OrdersOut, 0, len(orders))
+        for i := range orders </span><span class="cov8" title="1">{
                 outElem := OrdersOut{
                         Number:     orders[i].Number,
                         Status:     orders[i].Status,
@@ -756,24 +836,24 @@ func (handler OrdersHandler) Orders(res http.ResponseWriter, req *http.Request) 
                 out = append(out, outElem)
         }</span>
 
-        <span class="cov0" title="0">resp, err := json.Marshal(out)
+        <span class="cov8" title="1">resp, err := json.Marshal(out)
         if err != nil </span><span class="cov0" title="0">{
                 http.Error(res, err.Error(), http.StatusInternalServerError)
                 return
         }</span>
 
-        <span class="cov0" title="0">res.Header().Set("Content-Type", "application/json")
-        if len(out) == 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">res.Header().Set("Content-Type", "application/json")
+        if len(out) == 0 </span><span class="cov8" title="1">{
                 res.WriteHeader(http.StatusNoContent)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 res.WriteHeader(http.StatusOK)
         }</span>
 
-        <span class="cov0" title="0">res.Write(resp)</span>
+        <span class="cov8" title="1">res.Write(resp)</span>
 }
 </pre>
 		
-		<pre class="file" id="file8" style="display: none">package handler
+		<pre class="file" id="file9" style="display: none">package handler
 
 import (
         "bytes"
@@ -799,67 +879,67 @@ type RegisterHandler struct {
         registrator UserRegistrar
 }
 
-func NewRegisterHandler(registrator UserRegistrar) *RegisterHandler <span class="cov0" title="0">{
+func NewRegisterHandler(registrator UserRegistrar) *RegisterHandler <span class="cov8" title="1">{
         return &amp;RegisterHandler{
                 registrator: registrator,
         }
 }</span>
 
-func (handler RegisterHandler) Register(res http.ResponseWriter, req *http.Request) <span class="cov0" title="0">{
-        if req.Method != http.MethodPost </span><span class="cov0" title="0">{
+func (handler RegisterHandler) Register(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodPost </span><span class="cov8" title="1">{
                 http.Error(res, "Only POST requests are allowed!", http.StatusMethodNotAllowed)
                 return
         }</span>
 
-        <span class="cov0" title="0">var in RegisterIn
+        <span class="cov8" title="1">var in RegisterIn
         var buf bytes.Buffer
         // читаем тело запроса
         _, err := buf.ReadFrom(req.Body)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusBadRequest)
                 return
         }</span>
 
         // десериализуем JSON
-        <span class="cov0" title="0">if err = json.Unmarshal(buf.Bytes(), &amp;in); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err = json.Unmarshal(buf.Bytes(), &amp;in); err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusBadRequest)
                 return
         }</span>
 
-        <span class="cov0" title="0">if len(in.Login) &lt; 1 || len(in.Password) &lt; 1 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if len(in.Login) &lt; 1 || len(in.Password) &lt; 1 </span><span class="cov8" title="1">{
                 http.Error(res, "Login or password is empty", http.StatusBadRequest)
                 return
         }</span>
 
-        <span class="cov0" title="0">hashedPassword, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
+        <span class="cov8" title="1">hashedPassword, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
         if err != nil </span><span class="cov0" title="0">{
                 http.Error(res, "Error hashing password "+err.Error(), http.StatusInternalServerError)
                 return
         }</span>
 
-        <span class="cov0" title="0">userID := uuid.New()
+        <span class="cov8" title="1">userID := uuid.New()
         ok, err := handler.registrator.Register(req.Context(), userID, in.Login, string(hashedPassword))
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, "Failed to register user", http.StatusBadRequest)
                 return
         }</span>
 
-        <span class="cov0" title="0">if !ok </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !ok </span><span class="cov8" title="1">{
                 res.WriteHeader(http.StatusConflict)
                 return
         }</span>
 
-        <span class="cov0" title="0">err = auth.SetNewAuthCookie(userID, res)
+        <span class="cov8" title="1">err = auth.SetNewAuthCookie(userID, res)
         if err != nil </span><span class="cov0" title="0">{
                 http.Error(res, err.Error(), http.StatusInternalServerError)
                 return
         }</span>
 
-        <span class="cov0" title="0">res.WriteHeader(http.StatusOK)</span>
+        <span class="cov8" title="1">res.WriteHeader(http.StatusOK)</span>
 }
 </pre>
 		
-		<pre class="file" id="file9" style="display: none">package handler
+		<pre class="file" id="file10" style="display: none">package handler
 
 import (
         "context"
@@ -879,44 +959,44 @@ type RegisterOrderHandler struct {
         registrar OrderRegistrar
 }
 
-func NewRegisterOrderHandler(registrar OrderRegistrar) *RegisterOrderHandler <span class="cov0" title="0">{
+func NewRegisterOrderHandler(registrar OrderRegistrar) *RegisterOrderHandler <span class="cov8" title="1">{
         return &amp;RegisterOrderHandler{
                 registrar: registrar,
         }
 }</span>
 
-func (handler RegisterOrderHandler) RegisterOrder(res http.ResponseWriter, req *http.Request) <span class="cov0" title="0">{
-        if req.Method != http.MethodPost </span><span class="cov0" title="0">{
+func (handler RegisterOrderHandler) RegisterOrder(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodPost </span><span class="cov8" title="1">{
                 http.Error(res, "Only POST requests are allowed!", http.StatusMethodNotAllowed)
                 return
         }</span>
 
-        <span class="cov0" title="0">userID, err := auth.GetUserIDFromReq(req)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusUnauthorized)
                 return
         }</span>
 
-        <span class="cov0" title="0">body, err := io.ReadAll(req.Body)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">body, err := io.ReadAll(req.Body)
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusInternalServerError)
                 return
         }</span>
 
-        <span class="cov0" title="0">result, err := handler.registrar.RegisterOrder(req.Context(), userID, string(body))
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">result, err := handler.registrar.RegisterOrder(req.Context(), userID, string(body))
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusInternalServerError)
                 return
         }</span>
 
-        <span class="cov0" title="0">switch result </span>{
-        case constants.AlreadyRegistered:<span class="cov0" title="0">
+        <span class="cov8" title="1">switch result </span>{
+        case constants.AlreadyRegistered:<span class="cov8" title="1">
                 res.WriteHeader(http.StatusOK)</span>
-        case constants.AcceptedToProcessing:<span class="cov0" title="0">
+        case constants.AcceptedToProcessing:<span class="cov8" title="1">
                 res.WriteHeader(http.StatusAccepted)</span>
-        case constants.WrongOrderNumberFormat:<span class="cov0" title="0">
+        case constants.WrongOrderNumberFormat:<span class="cov8" title="1">
                 res.WriteHeader(http.StatusUnprocessableEntity)</span>
-        case constants.RegisteredByAnotherUser:<span class="cov0" title="0">
+        case constants.RegisteredByAnotherUser:<span class="cov8" title="1">
                 res.WriteHeader(http.StatusConflict)</span>
         default:<span class="cov0" title="0">
                 http.Error(res, "Wrong format", http.StatusBadRequest)</span>
@@ -924,7 +1004,7 @@ func (handler RegisterOrderHandler) RegisterOrder(res http.ResponseWriter, req *
 }
 </pre>
 		
-		<pre class="file" id="file10" style="display: none">package handler
+		<pre class="file" id="file11" style="display: none">package handler
 
 import (
         "bytes"
@@ -951,52 +1031,63 @@ type WithdrawHandler struct {
         withdrawer Withdrawer
 }
 
-func NewWithdrawHandler(withdrawer Withdrawer) *WithdrawHandler <span class="cov0" title="0">{
+func NewWithdrawHandler(withdrawer Withdrawer) *WithdrawHandler <span class="cov8" title="1">{
         return &amp;WithdrawHandler{
                 withdrawer: withdrawer,
         }
 }</span>
 
-func (handler WithdrawHandler) Withdraw(res http.ResponseWriter, req *http.Request) <span class="cov0" title="0">{
-        if req.Method != http.MethodPost </span><span class="cov0" title="0">{
+func (handler WithdrawHandler) Withdraw(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodPost </span><span class="cov8" title="1">{
                 http.Error(res, "Only POST requests are allowed!", http.StatusMethodNotAllowed)
                 return
         }</span>
 
-        <span class="cov0" title="0">userID, err := auth.GetUserIDFromReq(req)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusUnauthorized)
                 return
         }</span>
 
-        <span class="cov0" title="0">var in WithdrawIn
+        <span class="cov8" title="1">var in WithdrawIn
         var buf bytes.Buffer
         // читаем тело запроса
         _, err = buf.ReadFrom(req.Body)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusBadRequest)
                 return
         }</span>
 
         // десериализуем JSON
-        <span class="cov0" title="0">if err = json.Unmarshal(buf.Bytes(), &amp;in); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err = json.Unmarshal(buf.Bytes(), &amp;in); err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusBadRequest)
                 return
         }</span>
 
-        <span class="cov0" title="0">result, err := handler.withdrawer.Withdraw(req.Context(), userID, in.Order, in.Sum)
-        if err != nil </span><span class="cov0" title="0">{
+        // Validate input
+        <span class="cov8" title="1">if in.Order == "" </span><span class="cov8" title="1">{
+                http.Error(res, "Order number is required", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">if in.Sum &lt;= 0 </span><span class="cov8" title="1">{
+                http.Error(res, "Sum must be greater than 0", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">result, err := handler.withdrawer.Withdraw(req.Context(), userID, in.Order, in.Sum)
+        if err != nil </span><span class="cov8" title="1">{
                 zap.L().Sugar().Debugln("Error withdrawing balance:", err.Error())
                 http.Error(res, err.Error(), http.StatusInternalServerError)
                 return
         }</span>
 
-        <span class="cov0" title="0">switch result </span>{
-        case constants.Success:<span class="cov0" title="0">
+        <span class="cov8" title="1">switch result </span>{
+        case constants.Success:<span class="cov8" title="1">
                 res.WriteHeader(http.StatusOK)</span>
-        case constants.InsufficientFunds:<span class="cov0" title="0">
+        case constants.InsufficientFunds:<span class="cov8" title="1">
                 res.WriteHeader(http.StatusPaymentRequired)</span>
-        case constants.WrongOrderFormat:<span class="cov0" title="0">
+        case constants.WrongOrderFormat:<span class="cov8" title="1">
                 res.WriteHeader(http.StatusUnprocessableEntity)</span>
         default:<span class="cov0" title="0">
                 http.Error(res, "Wrong format", http.StatusBadRequest)</span>
@@ -1004,7 +1095,7 @@ func (handler WithdrawHandler) Withdraw(res http.ResponseWriter, req *http.Reque
 }
 </pre>
 		
-		<pre class="file" id="file11" style="display: none">package handler
+		<pre class="file" id="file12" style="display: none">package handler
 
 import (
         "context"
@@ -1031,32 +1122,32 @@ type WithdrawalsHandler struct {
         repo WithdrawalsRepository
 }
 
-func NewWithdrawalsHandler(repo WithdrawalsRepository) WithdrawalsHandler <span class="cov0" title="0">{
+func NewWithdrawalsHandler(repo WithdrawalsRepository) WithdrawalsHandler <span class="cov8" title="1">{
         return WithdrawalsHandler{
                 repo: repo,
         }
 }</span>
 
-func (handler WithdrawalsHandler) Withdrawals(res http.ResponseWriter, req *http.Request) <span class="cov0" title="0">{
-        if req.Method != http.MethodGet </span><span class="cov0" title="0">{
+func (handler WithdrawalsHandler) Withdrawals(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodGet </span><span class="cov8" title="1">{
                 http.Error(res, "Only GET requests are allowed!", http.StatusMethodNotAllowed)
                 return
         }</span>
 
-        <span class="cov0" title="0">userID, err := auth.GetUserIDFromReq(req)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusUnauthorized)
                 return
         }</span>
 
-        <span class="cov0" title="0">withdrawals, err := handler.repo.Withdrawals(req.Context(), userID)
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">withdrawals, err := handler.repo.Withdrawals(req.Context(), userID)
+        if err != nil </span><span class="cov8" title="1">{
                 http.Error(res, err.Error(), http.StatusBadRequest)
                 return
         }</span>
 
-        <span class="cov0" title="0">out := make([]WithdrawalsOut, 0, len(withdrawals))
-        for i := range withdrawals </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">out := make([]WithdrawalsOut, 0, len(withdrawals))
+        for i := range withdrawals </span><span class="cov8" title="1">{
                 outElem := WithdrawalsOut{
                         Order:       withdrawals[i].Number,
                         Sum:         withdrawals[i].Sum,
@@ -1065,24 +1156,24 @@ func (handler WithdrawalsHandler) Withdrawals(res http.ResponseWriter, req *http
                 out = append(out, outElem)
         }</span>
 
-        <span class="cov0" title="0">resp, err := json.Marshal(out)
+        <span class="cov8" title="1">resp, err := json.Marshal(out)
         if err != nil </span><span class="cov0" title="0">{
                 http.Error(res, err.Error(), http.StatusInternalServerError)
                 return
         }</span>
 
-        <span class="cov0" title="0">res.Header().Set("Content-Type", "application/json")
-        if len(out) == 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">res.Header().Set("Content-Type", "application/json")
+        if len(out) == 0 </span><span class="cov8" title="1">{
                 res.WriteHeader(http.StatusNoContent)
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 res.WriteHeader(http.StatusOK)
         }</span>
 
-        <span class="cov0" title="0">res.Write(resp)</span>
+        <span class="cov8" title="1">res.Write(resp)</span>
 }
 </pre>
 		
-		<pre class="file" id="file12" style="display: none">package logging
+		<pre class="file" id="file13" style="display: none">package logging
 
 import (
         "log"
@@ -1106,26 +1197,26 @@ type (
         }
 )
 
-func (r *loggingResponseWriter) Write(b []byte) (int, error) <span class="cov0" title="0">{
+func (r *loggingResponseWriter) Write(b []byte) (int, error) <span class="cov8" title="1">{
         // записываем ответ, используя оригинальный http.ResponseWriter
         size, err := r.ResponseWriter.Write(b)
         r.responseData.size += size // захватываем размер
         return size, err
 }</span>
 
-func (r *loggingResponseWriter) WriteHeader(statusCode int) <span class="cov0" title="0">{
+func (r *loggingResponseWriter) WriteHeader(statusCode int) <span class="cov8" title="1">{
         // записываем код статуса, используя оригинальный http.ResponseWriter
         r.ResponseWriter.WriteHeader(statusCode)
         r.responseData.status = statusCode // захватываем код статуса
 }</span>
 
-func WithLogging(h http.Handler) http.Handler <span class="cov0" title="0">{
-        logFn := func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+func WithLogging(h http.Handler) http.Handler <span class="cov8" title="1">{
+        logFn := func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
                 logger, err := zap.NewDevelopment()
                 if err != nil </span><span class="cov0" title="0">{
                         log.Fatalf("can't initialize zap logger: %v", err)
                 }</span>
-                <span class="cov0" title="0">defer logger.Sync()
+                <span class="cov8" title="1">defer logger.Sync()
 
                 sugar := *logger.Sugar()
 
@@ -1151,11 +1242,503 @@ func WithLogging(h http.Handler) http.Handler <span class="cov0" title="0">{
                         "size", responseData.size, // получаем перехваченный размер ответа
                 )</span>
         }
-        <span class="cov0" title="0">return http.HandlerFunc(logFn)</span>
+        <span class="cov8" title="1">return http.HandlerFunc(logFn)</span>
 }
 </pre>
 		
-		<pre class="file" id="file13" style="display: none">package router
+		<pre class="file" id="file14" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/balance.go
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        models "github.com/iubondar/gophermart/internal/models"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockBalanceRepository is a mock of BalanceRepository interface.
+type MockBalanceRepository struct {
+        ctrl     *gomock.Controller
+        recorder *MockBalanceRepositoryMockRecorder
+}
+
+// MockBalanceRepositoryMockRecorder is the mock recorder for MockBalanceRepository.
+type MockBalanceRepositoryMockRecorder struct {
+        mock *MockBalanceRepository
+}
+
+// NewMockBalanceRepository creates a new mock instance.
+func NewMockBalanceRepository(ctrl *gomock.Controller) *MockBalanceRepository <span class="cov0" title="0">{
+        mock := &amp;MockBalanceRepository{ctrl: ctrl}
+        mock.recorder = &amp;MockBalanceRepositoryMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBalanceRepository) EXPECT() *MockBalanceRepositoryMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Account mocks base method.
+func (m *MockBalanceRepository) Account(ctx context.Context, userID uuid.UUID) (models.Account, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Account", ctx, userID)
+        ret0, _ := ret[0].(models.Account)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Account indicates an expected call of Account.
+func (mr *MockBalanceRepositoryMockRecorder) Account(ctx, userID interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Account", reflect.TypeOf((*MockBalanceRepository)(nil).Account), ctx, userID)
+}</span> </pre>
+		
+		<pre class="file" id="file15" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/login.go
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockLoginChecker is a mock of LoginChecker interface.
+type MockLoginChecker struct {
+        ctrl     *gomock.Controller
+        recorder *MockLoginCheckerMockRecorder
+}
+
+// MockLoginCheckerMockRecorder is the mock recorder for MockLoginChecker.
+type MockLoginCheckerMockRecorder struct {
+        mock *MockLoginChecker
+}
+
+// NewMockLoginChecker creates a new mock instance.
+func NewMockLoginChecker(ctrl *gomock.Controller) *MockLoginChecker <span class="cov0" title="0">{
+        mock := &amp;MockLoginChecker{ctrl: ctrl}
+        mock.recorder = &amp;MockLoginCheckerMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockLoginChecker) EXPECT() *MockLoginCheckerMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// CheckLogin mocks base method.
+func (m *MockLoginChecker) CheckLogin(ctx context.Context, login, passwordHash string) (uuid.UUID, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "CheckLogin", ctx, login, passwordHash)
+        ret0, _ := ret[0].(uuid.UUID)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// CheckLogin indicates an expected call of CheckLogin.
+func (mr *MockLoginCheckerMockRecorder) CheckLogin(ctx, login, passwordHash interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckLogin", reflect.TypeOf((*MockLoginChecker)(nil).CheckLogin), ctx, login, passwordHash)
+}</span> </pre>
+		
+		<pre class="file" id="file16" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/register_order.go
+//
+// Generated by this command:
+//
+//        mockgen -source=internal/handler/register_order.go -destination=internal/handler/mocks/order_registrar.go -package=mocks
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        constants "github.com/iubondar/gophermart/internal/constants"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockOrderRegistrar is a mock of OrderRegistrar interface.
+type MockOrderRegistrar struct {
+        ctrl     *gomock.Controller
+        recorder *MockOrderRegistrarMockRecorder
+        isgomock struct{}
+}
+
+// MockOrderRegistrarMockRecorder is the mock recorder for MockOrderRegistrar.
+type MockOrderRegistrarMockRecorder struct {
+        mock *MockOrderRegistrar
+}
+
+// NewMockOrderRegistrar creates a new mock instance.
+func NewMockOrderRegistrar(ctrl *gomock.Controller) *MockOrderRegistrar <span class="cov0" title="0">{
+        mock := &amp;MockOrderRegistrar{ctrl: ctrl}
+        mock.recorder = &amp;MockOrderRegistrarMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrderRegistrar) EXPECT() *MockOrderRegistrarMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// RegisterOrder mocks base method.
+func (m *MockOrderRegistrar) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumber string) (constants.OrderRegistrationResult, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "RegisterOrder", ctx, userID, orderNumber)
+        ret0, _ := ret[0].(constants.OrderRegistrationResult)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// RegisterOrder indicates an expected call of RegisterOrder.
+func (mr *MockOrderRegistrarMockRecorder) RegisterOrder(ctx, userID, orderNumber any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterOrder", reflect.TypeOf((*MockOrderRegistrar)(nil).RegisterOrder), ctx, userID, orderNumber)
+}</span>
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: order_status_fetcher.go
+//
+// Generated by this command:
+//
+//        mockgen -source=order_status_fetcher.go -destination=./mock_order_status_fetcher.go -package=mocks
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        models "github.com/iubondar/gophermart/internal/models"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockOrderStatusFetcher is a mock of OrderStatusFetcher interface.
+type MockOrderStatusFetcher struct {
+        ctrl     *gomock.Controller
+        recorder *MockOrderStatusFetcherMockRecorder
+        isgomock struct{}
+}
+
+// MockOrderStatusFetcherMockRecorder is the mock recorder for MockOrderStatusFetcher.
+type MockOrderStatusFetcherMockRecorder struct {
+        mock *MockOrderStatusFetcher
+}
+
+// NewMockOrderStatusFetcher creates a new mock instance.
+func NewMockOrderStatusFetcher(ctrl *gomock.Controller) *MockOrderStatusFetcher <span class="cov0" title="0">{
+        mock := &amp;MockOrderStatusFetcher{ctrl: ctrl}
+        mock.recorder = &amp;MockOrderStatusFetcherMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrderStatusFetcher) EXPECT() *MockOrderStatusFetcherMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// FetchOrderStatus mocks base method.
+func (m *MockOrderStatusFetcher) FetchOrderStatus(ctx context.Context, order models.Order) (models.OrderStatus, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "FetchOrderStatus", ctx, order)
+        ret0, _ := ret[0].(models.OrderStatus)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// FetchOrderStatus indicates an expected call of FetchOrderStatus.
+func (mr *MockOrderStatusFetcherMockRecorder) FetchOrderStatus(ctx, order any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchOrderStatus", reflect.TypeOf((*MockOrderStatusFetcher)(nil).FetchOrderStatus), ctx, order)
+}</span>
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: orders_repository.go
+//
+// Generated by this command:
+//
+//        mockgen -source=orders_repository.go -destination=./mock_orders_repository.go -package=mocks
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        models "github.com/iubondar/gophermart/internal/models"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockOrdersRepository is a mock of OrdersRepository interface.
+type MockOrdersRepository struct {
+        ctrl     *gomock.Controller
+        recorder *MockOrdersRepositoryMockRecorder
+        isgomock struct{}
+}
+
+// MockOrdersRepositoryMockRecorder is the mock recorder for MockOrdersRepository.
+type MockOrdersRepositoryMockRecorder struct {
+        mock *MockOrdersRepository
+}
+
+// NewMockOrdersRepository creates a new mock instance.
+func NewMockOrdersRepository(ctrl *gomock.Controller) *MockOrdersRepository <span class="cov0" title="0">{
+        mock := &amp;MockOrdersRepository{ctrl: ctrl}
+        mock.recorder = &amp;MockOrdersRepositoryMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrdersRepository) EXPECT() *MockOrdersRepositoryMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Orders mocks base method.
+func (m *MockOrdersRepository) Orders(ctx context.Context, userID uuid.UUID) ([]models.Order, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Orders", ctx, userID)
+        ret0, _ := ret[0].([]models.Order)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Orders indicates an expected call of Orders.
+func (mr *MockOrdersRepositoryMockRecorder) Orders(ctx, userID any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Orders", reflect.TypeOf((*MockOrdersRepository)(nil).Orders), ctx, userID)
+}</span>
+
+// OrdersToUpdate mocks base method.
+func (m *MockOrdersRepository) OrdersToUpdate(ctx context.Context, limit int) ([]models.Order, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "OrdersToUpdate", ctx, limit)
+        ret0, _ := ret[0].([]models.Order)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// OrdersToUpdate indicates an expected call of OrdersToUpdate.
+func (mr *MockOrdersRepositoryMockRecorder) OrdersToUpdate(ctx, limit any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OrdersToUpdate", reflect.TypeOf((*MockOrdersRepository)(nil).OrdersToUpdate), ctx, limit)
+}</span>
+
+// UpdateOrders mocks base method.
+func (m *MockOrdersRepository) UpdateOrders(ctx context.Context, orders []models.OrderStatus) error <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "UpdateOrders", ctx, orders)
+        ret0, _ := ret[0].(error)
+        return ret0
+}</span>
+
+// UpdateOrders indicates an expected call of UpdateOrders.
+func (mr *MockOrdersRepositoryMockRecorder) UpdateOrders(ctx, orders any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOrders", reflect.TypeOf((*MockOrdersRepository)(nil).UpdateOrders), ctx, orders)
+}</span>
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/register.go
+//
+// Generated by this command:
+//
+//        mockgen -source=internal/handler/register.go -destination=internal/handler/mocks/mock_user_registrar.go -package=mocks UserRegistrar
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockUserRegistrar is a mock of UserRegistrar interface.
+type MockUserRegistrar struct {
+        ctrl     *gomock.Controller
+        recorder *MockUserRegistrarMockRecorder
+        isgomock struct{}
+}
+
+// MockUserRegistrarMockRecorder is the mock recorder for MockUserRegistrar.
+type MockUserRegistrarMockRecorder struct {
+        mock *MockUserRegistrar
+}
+
+// NewMockUserRegistrar creates a new mock instance.
+func NewMockUserRegistrar(ctrl *gomock.Controller) *MockUserRegistrar <span class="cov0" title="0">{
+        mock := &amp;MockUserRegistrar{ctrl: ctrl}
+        mock.recorder = &amp;MockUserRegistrarMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUserRegistrar) EXPECT() *MockUserRegistrarMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Register mocks base method.
+func (m *MockUserRegistrar) Register(ctx context.Context, userID uuid.UUID, login, passwordHash string) (bool, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Register", ctx, userID, login, passwordHash)
+        ret0, _ := ret[0].(bool)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Register indicates an expected call of Register.
+func (mr *MockUserRegistrarMockRecorder) Register(ctx, userID, login, passwordHash any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockUserRegistrar)(nil).Register), ctx, userID, login, passwordHash)
+}</span>
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/withdrawals.go
+//
+// Generated by this command:
+//
+//        mockgen -source=internal/handler/withdrawals.go -destination=internal/handler/mocks/mock_withdrawals_repository.go -package=mocks WithdrawalsRepository
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        models "github.com/iubondar/gophermart/internal/models"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockWithdrawalsRepository is a mock of WithdrawalsRepository interface.
+type MockWithdrawalsRepository struct {
+        ctrl     *gomock.Controller
+        recorder *MockWithdrawalsRepositoryMockRecorder
+        isgomock struct{}
+}
+
+// MockWithdrawalsRepositoryMockRecorder is the mock recorder for MockWithdrawalsRepository.
+type MockWithdrawalsRepositoryMockRecorder struct {
+        mock *MockWithdrawalsRepository
+}
+
+// NewMockWithdrawalsRepository creates a new mock instance.
+func NewMockWithdrawalsRepository(ctrl *gomock.Controller) *MockWithdrawalsRepository <span class="cov0" title="0">{
+        mock := &amp;MockWithdrawalsRepository{ctrl: ctrl}
+        mock.recorder = &amp;MockWithdrawalsRepositoryMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockWithdrawalsRepository) EXPECT() *MockWithdrawalsRepositoryMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Withdrawals mocks base method.
+func (m *MockWithdrawalsRepository) Withdrawals(ctx context.Context, userID uuid.UUID) ([]models.Withdrawal, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Withdrawals", ctx, userID)
+        ret0, _ := ret[0].([]models.Withdrawal)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Withdrawals indicates an expected call of Withdrawals.
+func (mr *MockWithdrawalsRepositoryMockRecorder) Withdrawals(ctx, userID any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Withdrawals", reflect.TypeOf((*MockWithdrawalsRepository)(nil).Withdrawals), ctx, userID)
+}</span>
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/withdraw.go
+//
+// Generated by this command:
+//
+//        mockgen -source=internal/handler/withdraw.go -destination=internal/handler/mocks/mock_withdrawer.go -package=mocks Withdrawer
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        constants "github.com/iubondar/gophermart/internal/constants"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockWithdrawer is a mock of Withdrawer interface.
+type MockWithdrawer struct {
+        ctrl     *gomock.Controller
+        recorder *MockWithdrawerMockRecorder
+        isgomock struct{}
+}
+
+// MockWithdrawerMockRecorder is the mock recorder for MockWithdrawer.
+type MockWithdrawerMockRecorder struct {
+        mock *MockWithdrawer
+}
+
+// NewMockWithdrawer creates a new mock instance.
+func NewMockWithdrawer(ctrl *gomock.Controller) *MockWithdrawer <span class="cov0" title="0">{
+        mock := &amp;MockWithdrawer{ctrl: ctrl}
+        mock.recorder = &amp;MockWithdrawerMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockWithdrawer) EXPECT() *MockWithdrawerMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Withdraw mocks base method.
+func (m *MockWithdrawer) Withdraw(ctx context.Context, userID uuid.UUID, orderNumber string, sum float32) (constants.WithdrawResult, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Withdraw", ctx, userID, orderNumber, sum)
+        ret0, _ := ret[0].(constants.WithdrawResult)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Withdraw indicates an expected call of Withdraw.
+func (mr *MockWithdrawerMockRecorder) Withdraw(ctx, userID, orderNumber, sum any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Withdraw", reflect.TypeOf((*MockWithdrawer)(nil).Withdraw), ctx, userID, orderNumber, sum)
+}</span>
+</pre>
+		
+		<pre class="file" id="file22" style="display: none">package router
 
 import (
         "github.com/go-chi/chi"
@@ -1194,7 +1777,7 @@ func NewRouter(storage *storage.Storage) (chi.Router, error) <span class="cov0" 
 }
 </pre>
 		
-		<pre class="file" id="file14" style="display: none">package server
+		<pre class="file" id="file23" style="display: none">package server
 
 import (
         "context"
@@ -1211,7 +1794,7 @@ type Server struct {
         httpServer *http.Server
 }
 
-func New(addr string, handler http.Handler) *Server <span class="cov0" title="0">{
+func New(addr string, handler http.Handler) *Server <span class="cov8" title="1">{
         return &amp;Server{
                 httpServer: &amp;http.Server{
                         Addr:    addr,
@@ -1221,24 +1804,24 @@ func New(addr string, handler http.Handler) *Server <span class="cov0" title="0"
 }</span>
 
 // Start запускает сервер и начинает обработку запросов
-func (s *Server) Start() error <span class="cov0" title="0">{
+func (s *Server) Start() error <span class="cov8" title="1">{
         // Канал для обработки ошибок сервера
         serverErrors := make(chan error, 1)
 
         // Запускаем сервер в отдельной горутине
-        go func() </span><span class="cov0" title="0">{
+        go func() </span><span class="cov8" title="1">{
                 zap.L().Info("Starting server", zap.String("address", s.httpServer.Addr))
                 serverErrors &lt;- s.httpServer.ListenAndServe()
         }</span>()
 
         // Канал для обработки сигналов завершения от ОС
-        <span class="cov0" title="0">shutdown := make(chan os.Signal, 1)
+        <span class="cov8" title="1">shutdown := make(chan os.Signal, 1)
         // Регистрируем обработчики для SIGINT (Ctrl+C) и SIGTERM
         signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
         // Ожидаем либо ошибку сервера, либо сигнал завершения
         select </span>{
-        case err := &lt;-serverErrors:<span class="cov0" title="0">
+        case err := &lt;-serverErrors:<span class="cov8" title="1">
                 zap.L().Error("Server error", zap.Error(err))
                 return err</span>
 
@@ -1249,7 +1832,7 @@ func (s *Server) Start() error <span class="cov0" title="0">{
 }
 
 // Shutdown выполняет graceful shutdown сервера
-func (s *Server) Shutdown() error <span class="cov0" title="0">{
+func (s *Server) Shutdown() error <span class="cov8" title="1">{
         // Устанавливаем таймаут 5 секунд для завершения текущих запросов
         ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
         defer cancel()
@@ -1265,11 +1848,11 @@ func (s *Server) Shutdown() error <span class="cov0" title="0">{
                 <span class="cov0" title="0">return err</span>
         }
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 </pre>
 		
-		<pre class="file" id="file15" style="display: none">package service
+		<pre class="file" id="file24" style="display: none">package service
 
 import (
         "context"
@@ -1310,7 +1893,7 @@ func NewPollingService(
         concurrency int,
         fetcher OrderStatusFetcher,
         repo OrdersRepository,
-) *PollingService <span class="cov0" title="0">{
+) *PollingService <span class="cov8" title="1">{
         ctx, cancel := context.WithCancel(context.Background())
         return &amp;PollingService{
                 interval:    interval,
@@ -1323,15 +1906,15 @@ func NewPollingService(
         }
 }</span>
 
-func (ps *PollingService) Start() <span class="cov0" title="0">{
+func (ps *PollingService) Start() <span class="cov8" title="1">{
         ticker := time.NewTicker(ps.interval)
 
-        go func() </span><span class="cov0" title="0">{
-                for </span><span class="cov0" title="0">{
+        go func() </span><span class="cov8" title="1">{
+                for </span><span class="cov8" title="1">{
                         select </span>{
-                        case &lt;-ticker.C:<span class="cov0" title="0">
+                        case &lt;-ticker.C:<span class="cov8" title="1">
                                 ps.runPollingCycle()</span>
-                        case &lt;-ps.done:<span class="cov0" title="0">
+                        case &lt;-ps.done:<span class="cov8" title="1">
                                 ticker.Stop()
                                 return</span>
                         }
@@ -1339,13 +1922,13 @@ func (ps *PollingService) Start() <span class="cov0" title="0">{
         }()
 }
 
-func (ps *PollingService) Stop() <span class="cov0" title="0">{
+func (ps *PollingService) Stop() <span class="cov8" title="1">{
         close(ps.done)
         ps.cancel()
         ps.wg.Wait()
 }</span>
 
-func (ps *PollingService) runPollingCycle() <span class="cov0" title="0">{
+func (ps *PollingService) runPollingCycle() <span class="cov8" title="1">{
         // извлекаем из репозитория номера заказов для обновления
         orders, err := ps.repo.OrdersToUpdate(ps.ctx, ps.concurrency)
         if err != nil </span><span class="cov0" title="0">{
@@ -1354,57 +1937,60 @@ func (ps *PollingService) runPollingCycle() <span class="cov0" title="0">{
         }</span>
 
         // Создаём input и output каналы
-        <span class="cov0" title="0">ordersCh := make(chan models.Order, len(orders))
+        <span class="cov8" title="1">ordersCh := make(chan models.Order, len(orders))
         resultCh := make(chan Result, len(orders))
 
         // Заполняем input канал заказами для обновления статуса
-        go func() </span><span class="cov0" title="0">{
+        go func() </span><span class="cov8" title="1">{
                 defer close(ordersCh)
-                for _, order := range orders </span><span class="cov0" title="0">{
+                for _, order := range orders </span><span class="cov8" title="1">{
                         ordersCh &lt;- order
                 }</span>
         }()
 
         // Fan-out: запускаем воркеры
-        <span class="cov0" title="0">ps.wg.Add(ps.concurrency)
-        for range ps.concurrency </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">ps.wg.Add(ps.concurrency)
+        for range ps.concurrency </span><span class="cov8" title="1">{
                 go ps.worker(ordersCh, resultCh)
         }</span>
 
         // Fan-in: собираем все результаты
-        <span class="cov0" title="0">go func() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">go func() </span><span class="cov8" title="1">{
                 ps.wg.Wait()    // ждём завершения всех воркеров
                 close(resultCh) // закрываем канал
 
                 // Обрабатываем все результаты после завершения
                 var orderStatuses []models.OrderStatus
-                for result := range resultCh </span><span class="cov0" title="0">{
-                        if result.Err != nil </span><span class="cov0" title="0">{
-                                zap.L().Sugar().Debugln("Got error: ", err.Error())
-                        }</span> else<span class="cov0" title="0"> {
+                for result := range resultCh </span><span class="cov8" title="1">{
+                        if result.Err != nil </span><span class="cov8" title="1">{
+                                zap.L().Sugar().Debugln("Got error from worker: ", result.Err.Error())
+                                // Even if there's an error, we still want to include the status in the update
+                                orderStatuses = append(orderStatuses, result.Status)
+                        }</span> else<span class="cov8" title="1"> {
                                 orderStatuses = append(orderStatuses, result.Status)
                         }</span>
                 }
 
-                <span class="cov0" title="0">err = ps.repo.UpdateOrders(ps.ctx, orderStatuses)
-                if err != nil </span><span class="cov0" title="0">{
+                // Always call UpdateOrders, even if there are no statuses to update
+                <span class="cov8" title="1">err = ps.repo.UpdateOrders(ps.ctx, orderStatuses)
+                if err != nil </span><span class="cov8" title="1">{
                         zap.L().Sugar().Debugln("Error updating order statuses, error: ", err.Error())
                         return
                 }</span>
         }()
 }
 
-func (ps *PollingService) worker(ordersCh &lt;-chan models.Order, resultsCh chan&lt;- Result) <span class="cov0" title="0">{
+func (ps *PollingService) worker(ordersCh &lt;-chan models.Order, resultsCh chan&lt;- Result) <span class="cov8" title="1">{
         defer ps.wg.Done()
 
-        for order := range ordersCh </span><span class="cov0" title="0">{
+        for order := range ordersCh </span><span class="cov8" title="1">{
                 status, err := ps.fetcher.FetchOrderStatus(ps.ctx, order)
                 resultsCh &lt;- Result{Status: status, Err: err}
         }</span>
 }
 </pre>
 		
-		<pre class="file" id="file16" style="display: none">package storage
+		<pre class="file" id="file25" style="display: none">package storage
 
 import (
         "context"
@@ -1433,33 +2019,33 @@ type Storage struct {
         db *sql.DB
 }
 
-func NewStorage(dsn string) (storage *Storage, err error) <span class="cov0" title="0">{
+func NewStorage(dsn string) (storage *Storage, err error) <span class="cov8" title="1">{
         db, err := sql.Open("pgx", dsn)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">goose.SetBaseFS(embedMigrations)
+        <span class="cov8" title="1">goose.SetBaseFS(embedMigrations)
 
         if err := goose.SetDialect("postgres"); err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">if err := goose.Up(db, "migrations"); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := goose.Up(db, "migrations"); err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">return &amp;Storage{
+        <span class="cov8" title="1">return &amp;Storage{
                 db: db,
         }, nil</span>
 }
 
-func (s *Storage) Register(ctx context.Context, userID uuid.UUID, login string, passwordHash string) (ok bool, err error) <span class="cov0" title="0">{
+func (s *Storage) Register(ctx context.Context, userID uuid.UUID, login string, passwordHash string) (ok bool, err error) <span class="cov8" title="1">{
         _, err = s.db.ExecContext(ctx, queries.InsertUser, userID, login, passwordHash)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 // Если пользователь с логином уже существует - возвращаем не ок
                 var pgErr *pgconn.PgError
-                if errors.As(err, &amp;pgErr) &amp;&amp; pgErr.Code == pgerrcode.UniqueViolation </span><span class="cov0" title="0">{
+                if errors.As(err, &amp;pgErr) &amp;&amp; pgErr.Code == pgerrcode.UniqueViolation </span><span class="cov8" title="1">{
                         return false, nil
                 }</span>
 
@@ -1468,56 +2054,56 @@ func (s *Storage) Register(ctx context.Context, userID uuid.UUID, login string, 
                 return false, err</span>
         }
 
-        <span class="cov0" title="0">return true, nil</span>
+        <span class="cov8" title="1">return true, nil</span>
 }
 
-func (s *Storage) CheckLogin(ctx context.Context, login string, password string) (userID uuid.UUID, err error) <span class="cov0" title="0">{
+func (s *Storage) CheckLogin(ctx context.Context, login string, password string) (userID uuid.UUID, err error) <span class="cov8" title="1">{
         row := s.db.QueryRowContext(ctx, queries.GetUserID, login)
 
         var hashedPassword string
         err = row.Scan(&amp;userID, &amp;hashedPassword)
 
-        if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
+        if errors.Is(err, sql.ErrNoRows) </span><span class="cov8" title="1">{
                 return uuid.Nil, nil
         }</span>
-        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
                 return uuid.Nil, err
         }</span>
 
-        <span class="cov0" title="0">err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+        if err != nil </span><span class="cov8" title="1">{
                 return uuid.Nil, nil
         }</span>
 
-        <span class="cov0" title="0">return userID, nil</span>
+        <span class="cov8" title="1">return userID, nil</span>
 }
 
-func (s *Storage) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumber string) (result constants.OrderRegistrationResult, err error) <span class="cov0" title="0">{
+func (s *Storage) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumber string) (result constants.OrderRegistrationResult, err error) <span class="cov8" title="1">{
         // Валидируем номер заказа алгоритмом Луна
         isValid := validator.ValidateLuhn(orderNumber)
-        if !isValid </span><span class="cov0" title="0">{
+        if !isValid </span><span class="cov8" title="1">{
                 return constants.WrongOrderNumberFormat, nil
         }</span>
 
         // Ищем заказ по номеру
-        <span class="cov0" title="0">var orderUserID uuid.UUID
+        <span class="cov8" title="1">var orderUserID uuid.UUID
         row := s.db.QueryRowContext(ctx, queries.GetUserIDByOrderNum, orderNumber)
         err = row.Scan(&amp;orderUserID)
-        if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
+        if errors.Is(err, sql.ErrNoRows) </span><span class="cov8" title="1">{
                 // Не нашли  - сохраняем заказ в БД с начальным статусом
                 _, err = s.db.ExecContext(ctx, queries.RegisterOrder, userID, orderNumber, constants.OrderStatusNew)
                 if err != nil </span><span class="cov0" title="0">{
                         zap.L().Sugar().Debugln("Error insert new order:", err.Error())
                         return 0, err
                 }</span>
-                <span class="cov0" title="0">return constants.AcceptedToProcessing, nil</span>
-        } else<span class="cov0" title="0"> if err != nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">return constants.AcceptedToProcessing, nil</span>
+        } else<span class="cov8" title="1"> if err != nil </span><span class="cov0" title="0">{
                 // Другая ошибка - возвращаем ошибку
                 zap.L().Sugar().Debugln("Error query order by num:", err.Error())
                 return 0, err
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 // Нашли - сверяем userID и возвращаем нужный результат
-                if userID == orderUserID </span><span class="cov0" title="0">{
+                if userID == orderUserID </span><span class="cov8" title="1">{
                         return constants.AlreadyRegistered, nil
                 }</span> else<span class="cov0" title="0"> {
                         return constants.RegisteredByAnotherUser, nil
@@ -1525,7 +2111,7 @@ func (s *Storage) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumb
         }
 }
 
-func (s *Storage) Orders(ctx context.Context, userID uuid.UUID) (orders []models.Order, err error) <span class="cov0" title="0">{
+func (s *Storage) Orders(ctx context.Context, userID uuid.UUID) (orders []models.Order, err error) <span class="cov8" title="1">{
         rows, err := s.db.QueryContext(ctx, queries.Orders, userID)
         if err != nil </span><span class="cov0" title="0">{
                 if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
@@ -1535,25 +2121,25 @@ func (s *Storage) Orders(ctx context.Context, userID uuid.UUID) (orders []models
                 }</span>
         }
 
-        <span class="cov0" title="0">defer rows.Close()
+        <span class="cov8" title="1">defer rows.Close()
 
-        for rows.Next() </span><span class="cov0" title="0">{
+        for rows.Next() </span><span class="cov8" title="1">{
                 var order models.Order
                 err = rows.Scan(&amp;order.Number, &amp;order.Status, &amp;order.Accrual, &amp;order.UploadedAt)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
-                <span class="cov0" title="0">orders = append(orders, order)</span>
+                <span class="cov8" title="1">orders = append(orders, order)</span>
         }
 
-        <span class="cov0" title="0">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("error processing rows: %s", err.Error())
         }</span>
 
-        <span class="cov0" title="0">return orders, nil</span>
+        <span class="cov8" title="1">return orders, nil</span>
 }
 
-func (s *Storage) OrdersToUpdate(ctx context.Context, limit int) (orders []models.Order, err error) <span class="cov0" title="0">{
+func (s *Storage) OrdersToUpdate(ctx context.Context, limit int) (orders []models.Order, err error) <span class="cov8" title="1">{
         rows, err := s.db.QueryContext(ctx, queries.OrdersToUpdate, limit)
         if err != nil </span><span class="cov0" title="0">{
                 if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
@@ -1563,45 +2149,45 @@ func (s *Storage) OrdersToUpdate(ctx context.Context, limit int) (orders []model
                 }</span>
         }
 
-        <span class="cov0" title="0">defer rows.Close()
+        <span class="cov8" title="1">defer rows.Close()
 
-        for rows.Next() </span><span class="cov0" title="0">{
+        for rows.Next() </span><span class="cov8" title="1">{
                 var order models.Order
                 err = rows.Scan(&amp;order.UserID, &amp;order.Number, &amp;order.Status, &amp;order.Accrual, &amp;order.UploadedAt)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
-                <span class="cov0" title="0">orders = append(orders, order)</span>
+                <span class="cov8" title="1">orders = append(orders, order)</span>
         }
 
-        <span class="cov0" title="0">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("error processing rows: %s", err.Error())
         }</span>
 
-        <span class="cov0" title="0">return orders, nil</span>
+        <span class="cov8" title="1">return orders, nil</span>
 }
 
-func (s *Storage) UpdateOrders(ctx context.Context, orders []models.OrderStatus) error <span class="cov0" title="0">{
+func (s *Storage) UpdateOrders(ctx context.Context, orders []models.OrderStatus) error <span class="cov8" title="1">{
         tx, err := s.db.Begin()
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
         // если Commit будет раньше, то откат проигнорируется
-        <span class="cov0" title="0">defer tx.Rollback()
+        <span class="cov8" title="1">defer tx.Rollback()
 
         updateStmt, err := tx.PrepareContext(ctx, queries.UpdateOrder)
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov0" title="0">defer updateStmt.Close()
+        <span class="cov8" title="1">defer updateStmt.Close()
 
         addStmt, err := tx.PrepareContext(ctx, queries.AddBalance)
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
-        <span class="cov0" title="0">defer addStmt.Close()
+        <span class="cov8" title="1">defer addStmt.Close()
 
-        for _, order := range orders </span><span class="cov0" title="0">{
+        for _, order := range orders </span><span class="cov8" title="1">{
                 // обновляем статус заказа
                 _, err = updateStmt.ExecContext(ctx, order.Status, order.Accrual, order.Number)
                 if err != nil </span><span class="cov0" title="0">{
@@ -1609,7 +2195,7 @@ func (s *Storage) UpdateOrders(ctx context.Context, orders []models.OrderStatus)
                 }</span>
 
                 // добавляем баланс пользователю, если заказ обработан
-                <span class="cov0" title="0">if order.Status == constants.OrderStatusProcessed </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">if order.Status == constants.OrderStatusProcessed </span><span class="cov8" title="1">{
                         _, err = addStmt.ExecContext(ctx, order.Accrual, order.UserID)
                         if err != nil </span><span class="cov0" title="0">{
                                 return err
@@ -1617,10 +2203,10 @@ func (s *Storage) UpdateOrders(ctx context.Context, orders []models.OrderStatus)
                 }
         }
 
-        <span class="cov0" title="0">return tx.Commit()</span>
+        <span class="cov8" title="1">return tx.Commit()</span>
 }
 
-func (s *Storage) Withdrawals(ctx context.Context, userID uuid.UUID) (withdrawals []models.Withdrawal, err error) <span class="cov0" title="0">{
+func (s *Storage) Withdrawals(ctx context.Context, userID uuid.UUID) (withdrawals []models.Withdrawal, err error) <span class="cov8" title="1">{
         rows, err := s.db.QueryContext(ctx, queries.Withdrawals, userID)
         if err != nil </span><span class="cov0" title="0">{
                 if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
@@ -1630,33 +2216,33 @@ func (s *Storage) Withdrawals(ctx context.Context, userID uuid.UUID) (withdrawal
                 }</span>
         }
 
-        <span class="cov0" title="0">defer rows.Close()
+        <span class="cov8" title="1">defer rows.Close()
 
-        for rows.Next() </span><span class="cov0" title="0">{
+        for rows.Next() </span><span class="cov8" title="1">{
                 var withdrawal models.Withdrawal
                 err = rows.Scan(&amp;withdrawal.Number, &amp;withdrawal.Sum, &amp;withdrawal.ProcessedAt)
                 if err != nil </span><span class="cov0" title="0">{
                         return nil, err
                 }</span>
-                <span class="cov0" title="0">withdrawals = append(withdrawals, withdrawal)</span>
+                <span class="cov8" title="1">withdrawals = append(withdrawals, withdrawal)</span>
         }
 
-        <span class="cov0" title="0">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("error processing rows: %s", err.Error())
         }</span>
 
-        <span class="cov0" title="0">return withdrawals, nil</span>
+        <span class="cov8" title="1">return withdrawals, nil</span>
 }
 
-func (s *Storage) Withdraw(ctx context.Context, userID uuid.UUID, orderNumber string, sum float32) (result constants.WithdrawResult, err error) <span class="cov0" title="0">{
+func (s *Storage) Withdraw(ctx context.Context, userID uuid.UUID, orderNumber string, sum float32) (result constants.WithdrawResult, err error) <span class="cov8" title="1">{
         // Валидируем номер заказа алгоритмом Луна
         isValid := validator.ValidateLuhn(orderNumber)
-        if !isValid </span><span class="cov0" title="0">{
+        if !isValid </span><span class="cov8" title="1">{
                 return constants.WrongOrderFormat, nil
         }</span>
 
         // Проверяем баланс пользователя
-        <span class="cov0" title="0">row := s.db.QueryRowContext(ctx, queries.GetBalance, userID)
+        <span class="cov8" title="1">row := s.db.QueryRowContext(ctx, queries.GetBalance, userID)
 
         var balance float32
         err = row.Scan(&amp;balance)
@@ -1667,50 +2253,50 @@ func (s *Storage) Withdraw(ctx context.Context, userID uuid.UUID, orderNumber st
                         return 0, err
                 }</span>
         }
-        <span class="cov0" title="0">if balance &lt; sum </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if balance &lt; sum </span><span class="cov8" title="1">{
                 return constants.InsufficientFunds, nil
         }</span>
 
         // Уменьшаем баланс на полученную сумму и делаем запись о списании в одной транзакции
-        <span class="cov0" title="0">tx, err := s.db.Begin()
+        <span class="cov8" title="1">tx, err := s.db.Begin()
         if err != nil </span><span class="cov0" title="0">{
                 return 0, err
         }</span>
-        <span class="cov0" title="0">defer tx.Rollback()
+        <span class="cov8" title="1">defer tx.Rollback()
 
         withdrawFromBalanceStmt, err := tx.PrepareContext(ctx, queries.WithdrawFromBalance)
         if err != nil </span><span class="cov0" title="0">{
                 return 0, err
         }</span>
-        <span class="cov0" title="0">defer withdrawFromBalanceStmt.Close()
+        <span class="cov8" title="1">defer withdrawFromBalanceStmt.Close()
 
         addWithdrawStmt, err := tx.PrepareContext(ctx, queries.AddWithdraw)
         if err != nil </span><span class="cov0" title="0">{
                 return 0, err
         }</span>
-        <span class="cov0" title="0">defer addWithdrawStmt.Close()
+        <span class="cov8" title="1">defer addWithdrawStmt.Close()
 
         _, err = withdrawFromBalanceStmt.ExecContext(ctx, sum, userID)
         if err != nil </span><span class="cov0" title="0">{
                 return 0, err
         }</span>
 
-        <span class="cov0" title="0">_, err = addWithdrawStmt.ExecContext(ctx, userID, orderNumber, sum)
+        <span class="cov8" title="1">_, err = addWithdrawStmt.ExecContext(ctx, userID, orderNumber, sum)
         if err != nil </span><span class="cov0" title="0">{
                 return 0, err
         }</span>
 
-        <span class="cov0" title="0">return constants.Success, tx.Commit()</span>
+        <span class="cov8" title="1">return constants.Success, tx.Commit()</span>
 }
 
-func (s *Storage) Account(ctx context.Context, userID uuid.UUID) (account models.Account, err error) <span class="cov0" title="0">{
+func (s *Storage) Account(ctx context.Context, userID uuid.UUID) (account models.Account, err error) <span class="cov8" title="1">{
         // Баланс пользователя
         row := s.db.QueryRowContext(ctx, queries.GetBalance, userID)
 
         var balance float32
         err = row.Scan(&amp;balance)
-        if err != nil </span><span class="cov0" title="0">{
-                if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
+                if errors.Is(err, sql.ErrNoRows) </span><span class="cov8" title="1">{
                         return models.Account{}, fmt.Errorf("cannot find record for userID: %s", userID.String())
                 }</span> else<span class="cov0" title="0"> {
                         return models.Account{}, err
@@ -1718,7 +2304,7 @@ func (s *Storage) Account(ctx context.Context, userID uuid.UUID) (account models
         }
 
         // Сумма вывода
-        <span class="cov0" title="0">row = s.db.QueryRowContext(ctx, queries.WithdrawalSum, userID)
+        <span class="cov8" title="1">row = s.db.QueryRowContext(ctx, queries.WithdrawalSum, userID)
 
         var withdrawalSum float32
         err = row.Scan(&amp;withdrawalSum)
@@ -1726,14 +2312,68 @@ func (s *Storage) Account(ctx context.Context, userID uuid.UUID) (account models
                 return models.Account{}, err
         }</span>
 
-        <span class="cov0" title="0">return models.Account{
+        <span class="cov8" title="1">return models.Account{
                 Balance:       balance,
                 WithdrawalSum: withdrawalSum,
         }, nil</span>
 }
 </pre>
 		
-		<pre class="file" id="file17" style="display: none">package validator
+		<pre class="file" id="file26" style="display: none">package testhelpers
+
+import (
+        "context"
+        "time"
+
+        "github.com/testcontainers/testcontainers-go"
+        "github.com/testcontainers/testcontainers-go/modules/postgres"
+        "github.com/testcontainers/testcontainers-go/wait"
+)
+
+type PostgresContainer struct {
+        *postgres.PostgresContainer
+        ConnectionString string
+}
+
+func CreatePostgresContainer(ctx context.Context) (*PostgresContainer, error) <span class="cov0" title="0">{
+        pgContainer, err := postgres.Run(ctx,
+                "postgres:15.3-alpine",
+                postgres.WithDatabase("test-db"),
+                postgres.WithUsername("postgres"),
+                postgres.WithPassword("postgres"),
+                testcontainers.WithWaitStrategy(
+                        wait.ForLog("database system is ready to accept connections").
+                                WithOccurrence(2).WithStartupTimeout(5*time.Second)),
+        )
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">connStr, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return &amp;PostgresContainer{
+                PostgresContainer: pgContainer,
+                ConnectionString:  connStr,
+        }, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file27" style="display: none">package testhelpers
+
+import "errors"
+
+// ErrorReader implements io.Reader and always returns an error.
+// Useful for testing error handling in functions that read from io.Reader.
+type ErrorReader struct{}
+
+func (er *ErrorReader) Read(p []byte) (n int, err error) <span class="cov0" title="0">{
+        return 0, errors.New("read error")
+}</span>
+</pre>
+		
+		<pre class="file" id="file28" style="display: none">package validator
 
 import (
         "unicode"
