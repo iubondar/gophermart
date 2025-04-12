@@ -56,15 +56,20 @@ func (c AccrualClient) FetchOrderStatus(ctx context.Context, order models.Order)
 	if resp.StatusCode() == http.StatusNoContent {
 		return models.OrderStatus{
 			UserID:  order.UserID,
-			Number:  result.Order,
+			Number:  order.Number,
 			Status:  constants.OrderStatusNew,
 			Accrual: 0,
 		}, nil
 	}
 
+	// Validate that the order number in response matches the request
+	if result.Order != order.Number {
+		return models.OrderStatus{}, fmt.Errorf("order number mismatch: expected %s, got %s", order.Number, result.Order)
+	}
+
 	return models.OrderStatus{
 		UserID:  order.UserID,
-		Number:  result.Order,
+		Number:  order.Number,
 		Status:  mapAccrualStatus(result.Status),
 		Accrual: result.Accrual,
 	}, nil
