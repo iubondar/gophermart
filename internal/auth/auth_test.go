@@ -51,7 +51,7 @@ func TestBuildJWTString(t *testing.T) {
 	userID := uuid.New()
 
 	// Call the function
-	tokenString, err := buildJWTString(userID)
+	tokenString, err := BuildJWTString(userID)
 	require.NoError(t, err)
 	assert.NotEmpty(t, tokenString)
 
@@ -73,7 +73,7 @@ func TestGetUserIDFromReq(t *testing.T) {
 	userID := uuid.New()
 
 	// Create a valid JWT token
-	tokenString, err := buildJWTString(userID)
+	tokenString, err := BuildJWTString(userID)
 	require.NoError(t, err)
 
 	// Create a request with the cookie
@@ -100,7 +100,7 @@ func TestGetUserID(t *testing.T) {
 	userID := uuid.New()
 
 	// Test valid token
-	tokenString, err := buildJWTString(userID)
+	tokenString, err := BuildJWTString(userID)
 	require.NoError(t, err)
 
 	extractedUserID, err := getUserID(tokenString)

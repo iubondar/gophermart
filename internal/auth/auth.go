@@ -20,7 +20,7 @@ type claims struct {
 }
 
 func SetNewAuthCookie(userID uuid.UUID, res http.ResponseWriter) error {
-	jwtString, err := buildJWTString(userID)
+	jwtString, err := BuildJWTString(userID)
 	if err != nil {
 		zap.L().Sugar().Debugln("Error building jwtString", err.Error())
 		return err
@@ -41,7 +41,7 @@ func SetNewAuthCookie(userID uuid.UUID, res http.ResponseWriter) error {
 }
 
 // BuildJWTString создаёт токен и возвращает его в виде строки.
-func buildJWTString(userID uuid.UUID) (string, error) {
+func BuildJWTString(userID uuid.UUID) (string, error) {
 	// создаём новый токен с алгоритмом подписи HS256 и утверждениями — Claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims{
 		RegisteredClaims: jwt.RegisteredClaims{},
