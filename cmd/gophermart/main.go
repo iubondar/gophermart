@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/iubondar/gophermart/internal/client"
 	"github.com/iubondar/gophermart/internal/config"
@@ -38,7 +42,49 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Fatal(
-		http.ListenAndServe(config.RunAddress, router),
-	)
+	// Создаем HTTP сервер с указанным адресом и роутером
+	server := &http.Server{
+		Addr:    config.RunAddress,
+		Handler: router,
+	}
+
+	// Канал для обработки ошибок сервера
+	serverErrors := make(chan error, 1)
+
+	// Запускаем сервер в отдельной горутине
+	go func() {
+		zap.L().Info("Starting server", zap.String("address", config.RunAddress))
+		serverErrors <- server.ListenAndServe()
+	}()
+
+	// Канал для обработки сигналов завершения от ОС
+	shutdown := make(chan os.Signal, 1)
+	// Регистрируем обработчики для SIGINT (Ctrl+C) и SIGTERM
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+
+	// Ожидаем либо ошибку сервера, либо сигнал завершения
+	select {
+	case err := <-serverErrors:
+		zap.L().Error("Server error", zap.Error(err))
+		os.Exit(1)
+
+	case sig := <-shutdown:
+		zap.L().Info("Start shutdown", zap.String("signal", sig.String()))
+
+		// Устанавливаем таймаут 5 секунд для завершения текущих запросов
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		// Останавливаем сервис опроса
+		pollingService.Stop()
+
+		// Пытаемся корректно завершить работу сервера
+		if err := server.Shutdown(ctx); err != nil {
+			zap.L().Error("Graceful shutdown did not complete", zap.Error(err))
+			// Если плавное завершение не удалось, принудительно закрываем сервер
+			if err := server.Close(); err != nil {
+				zap.L().Error("Could not stop server", zap.Error(err))
+			}
+		}
+	}
 }
