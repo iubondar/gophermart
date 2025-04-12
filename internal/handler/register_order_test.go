@@ -12,6 +12,7 @@ import (
 	"github.com/iubondar/gophermart/internal/auth"
 	"github.com/iubondar/gophermart/internal/constants"
 	"github.com/iubondar/gophermart/internal/handler/mocks"
+	"github.com/iubondar/gophermart/internal/testhelpers"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -160,7 +161,7 @@ func TestRegisterOrderHandler_RegisterOrder_ReadBodyError(t *testing.T) {
 	handler := NewRegisterOrderHandler(mockRegistrar)
 
 	// Create request with a body that will cause an error when reading
-	req := httptest.NewRequest(http.MethodPost, "/", &errorReader{})
+	req := httptest.NewRequest(http.MethodPost, "/", &testhelpers.ErrorReader{})
 	req = req.WithContext(ctx)
 
 	// Set up auth cookie
@@ -179,11 +180,4 @@ func TestRegisterOrderHandler_RegisterOrder_ReadBodyError(t *testing.T) {
 
 	// Check status code
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-// errorReader implements io.Reader and always returns an error
-type errorReader struct{}
-
-func (er *errorReader) Read(p []byte) (n int, err error) {
-	return 0, errors.New("read error")
 }
