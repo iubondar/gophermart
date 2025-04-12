@@ -11,6 +11,7 @@ import (
 
 const secretKey = "supersecretkey"
 const AuthCookieName = "Authorization"
+const UserIDKey = "userID"
 
 // claims — структура утверждений, которая включает стандартные утверждения и
 // одно пользовательское UserID
