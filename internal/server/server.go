@@ -11,12 +11,10 @@ import (
 	"go.uber.org/zap"
 )
 
-// Server представляет HTTP сервер с поддержкой graceful shutdown
 type Server struct {
 	httpServer *http.Server
 }
 
-// New создает новый экземпляр Server
 func New(addr string, handler http.Handler) *Server {
 	return &Server{
 		httpServer: &http.Server{
