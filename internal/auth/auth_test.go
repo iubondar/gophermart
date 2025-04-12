@@ -31,7 +31,10 @@ func TestSetNewAuthCookie(t *testing.T) {
 	require.NoError(t, err)
 
 	// Get the response cookies
-	cookies := rr.Result().Cookies()
+	resp := rr.Result()
+	defer resp.Body.Close()
+
+	cookies := resp.Cookies()
 	require.Len(t, cookies, 1)
 
 	// Check cookie properties
