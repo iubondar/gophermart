@@ -9,11 +9,8 @@ on:
       - master
 
 jobs:
-  migrations:
-    uses: ./.github/workflows/migrations.yml
 
   build:
-    needs: migrations
     runs-on: ubuntu-latest
     container: golang:1.23
 
@@ -52,6 +49,11 @@ jobs:
         run: |
           (cd cmd/gophermart && go build -buildvcs=false -o gophermart)
           (cd cmd/accrual && chmod +x accrual_linux_amd64)
+
+      - name: Run database migrations
+        run: |
+          go install github.com/pressly/goose/v3/cmd/goose@latest
+          goose -dir internal/storage/migrations postgres "postgresql://postgres:postgres@postgres/praktikum?sslmode=disable" up
 
       - name: Test
         run: |
