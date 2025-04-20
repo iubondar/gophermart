@@ -10,6 +10,7 @@ import (
 	"github.com/iubondar/gophermart/internal/auth"
 	"github.com/iubondar/gophermart/internal/mocks"
 	"github.com/iubondar/gophermart/internal/models"
+	"github.com/iubondar/gophermart/internal/usecase"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -21,9 +22,9 @@ func TestBalanceHandler_Balance(t *testing.T) {
 		method         string
 		userID         uuid.UUID
 		account        models.Account
-		repoError      error
+		ucError        error
 		expectedStatus int
-		expectedBody   BalanceOut
+		expectedBody   usecase.BalanceOut
 	}{
 		{
 			name:   "successful balance retrieval",
@@ -34,7 +35,7 @@ func TestBalanceHandler_Balance(t *testing.T) {
 				WithdrawalSum: 50.25,
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody: BalanceOut{
+			expectedBody: usecase.BalanceOut{
 				Current:   100.5,
 				Withdrawn: 50.25,
 			},
@@ -45,11 +46,11 @@ func TestBalanceHandler_Balance(t *testing.T) {
 			expectedStatus: http.StatusMethodNotAllowed,
 		},
 		{
-			name:           "repository error",
+			name:           "usecase error",
 			method:         http.MethodGet,
 			userID:         uuid.New(),
-			repoError:      assert.AnError,
-			expectedStatus: http.StatusBadRequest,
+			ucError:        assert.AnError,
+			expectedStatus: http.StatusInternalServerError,
 		},
 	}
 
@@ -58,8 +59,8 @@ func TestBalanceHandler_Balance(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			mockRepo := mocks.NewMockBalanceRepository(ctrl)
-			handler := NewBalanceHandler(mockRepo)
+			mockUC := mocks.NewMockGetBalanceUsecase(ctrl)
+			handler := NewBalanceHandler(mockUC)
 
 			req := httptest.NewRequest(tt.method, "/api/user/balance", nil)
 			if tt.userID != uuid.Nil {
@@ -72,9 +73,9 @@ func TestBalanceHandler_Balance(t *testing.T) {
 			}
 
 			if tt.method == http.MethodGet && tt.userID != uuid.Nil {
-				mockRepo.EXPECT().
-					Account(gomock.Any(), tt.userID).
-					Return(tt.account, tt.repoError)
+				mockUC.EXPECT().
+					GetBalance(gomock.Any(), tt.userID).
+					Return(tt.expectedBody, tt.ucError)
 			}
 
 			recorder := httptest.NewRecorder()
@@ -83,7 +84,7 @@ func TestBalanceHandler_Balance(t *testing.T) {
 			assert.Equal(t, tt.expectedStatus, recorder.Code)
 
 			if tt.expectedStatus == http.StatusOK {
-				var response BalanceOut
+				var response usecase.BalanceOut
 				err := json.NewDecoder(recorder.Body).Decode(&response)
 				require.NoError(t, err)
 				assert.Equal(t, tt.expectedBody, response)
