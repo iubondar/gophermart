@@ -1,12 +1,7 @@
 name: migrations
 
 on:
-  workflow_dispatch:
-  pull_request:
-  push:
-    branches:
-      - main
-      - master
+  workflow_call:
 
 jobs:
   run-migrations:
