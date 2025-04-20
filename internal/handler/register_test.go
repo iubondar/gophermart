@@ -94,6 +94,9 @@ func TestRegisterHandler_Register(t *testing.T) {
 			// Call handler
 			handler.Register(rr, req)
 
+			resp := rr.Result()
+			defer resp.Body.Close()
+
 			// Check status code
 			assert.Equal(t, tt.expectedStatus, rr.Code)
 
@@ -104,7 +107,7 @@ func TestRegisterHandler_Register(t *testing.T) {
 
 			// Check auth cookie for successful registration
 			if tt.expectedStatus == http.StatusOK {
-				cookies := rr.Result().Cookies()
+				cookies := resp.Cookies()
 				assert.Len(t, cookies, 1)
 				assert.Equal(t, auth.AuthCookieName, cookies[0].Name)
 			}
