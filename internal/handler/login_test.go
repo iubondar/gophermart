@@ -21,7 +21,7 @@ func TestLoginHandler_Login(t *testing.T) {
 		method         string
 		loginIn        LoginIn
 		userID         uuid.UUID
-		checkerError   error
+		ucError        error
 		expectedStatus int
 	}{
 		{
@@ -59,13 +59,13 @@ func TestLoginHandler_Login(t *testing.T) {
 			expectedStatus: http.StatusUnauthorized,
 		},
 		{
-			name:   "checker error",
+			name:   "usecase error",
 			method: http.MethodPost,
 			loginIn: LoginIn{
 				Login:    "testuser",
 				Password: "testpass",
 			},
-			checkerError:   assert.AnError,
+			ucError:        assert.AnError,
 			expectedStatus: http.StatusInternalServerError,
 		},
 	}
@@ -75,8 +75,8 @@ func TestLoginHandler_Login(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			mockChecker := mocks.NewMockLoginChecker(ctrl)
-			handler := NewLoginHandler(mockChecker)
+			mockUC := mocks.NewMockLoginUsecase(ctrl)
+			handler := NewLoginHandler(mockUC)
 
 			var reqBody []byte
 			if tt.name != "invalid json" {
@@ -91,9 +91,9 @@ func TestLoginHandler_Login(t *testing.T) {
 			req.Header.Set("Content-Type", "application/json")
 
 			if tt.method == http.MethodPost && tt.name != "invalid json" {
-				mockChecker.EXPECT().
-					CheckLogin(gomock.Any(), tt.loginIn.Login, tt.loginIn.Password).
-					Return(tt.userID, tt.checkerError)
+				mockUC.EXPECT().
+					Login(gomock.Any(), tt.loginIn.Login, tt.loginIn.Password).
+					Return(tt.userID, tt.ucError)
 			}
 
 			recorder := httptest.NewRecorder()
