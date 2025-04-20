@@ -10,6 +10,7 @@ import (
 	"github.com/iubondar/gophermart/internal/constants"
 	"github.com/iubondar/gophermart/internal/models"
 	"github.com/iubondar/gophermart/internal/storage/queries"
+	"github.com/iubondar/gophermart/internal/usecase"
 	"github.com/iubondar/gophermart/internal/validator"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -21,6 +22,9 @@ import (
 type Storage struct {
 	db *sql.DB
 }
+
+// Compile-time interface implementation check
+var _ usecase.WithdrawalsRepository = (*Storage)(nil)
 
 func NewStorage(dsn string) (storage *Storage, err error) {
 	db, err := sql.Open("pgx", dsn)

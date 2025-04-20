@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,7 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
 	"github.com/iubondar/gophermart/internal/mocks"
-	"github.com/iubondar/gophermart/internal/models"
+	"github.com/iubondar/gophermart/internal/usecase"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -26,30 +25,30 @@ func TestWithdrawalsHandler_Withdrawals(t *testing.T) {
 	tests := []struct {
 		name           string
 		method         string
-		repoMock       func(*mocks.MockWithdrawalsRepository)
+		ucMock         func(*mocks.MockWithdrawalsUsecase)
 		expectedStatus int
-		expectedBody   []WithdrawalsOut
+		expectedBody   []usecase.WithdrawalOut
 	}{
 		{
 			name:   "successful retrieval with withdrawals",
 			method: http.MethodGet,
-			repoMock: func(m *mocks.MockWithdrawalsRepository) {
-				m.EXPECT().Withdrawals(gomock.Any(), userID).
-					Return([]models.Withdrawal{
+			ucMock: func(m *mocks.MockWithdrawalsUsecase) {
+				m.EXPECT().GetWithdrawals(gomock.Any(), userID).
+					Return([]usecase.WithdrawalOut{
 						{
-							Number:      "12345678903",
+							Order:       "12345678903",
 							Sum:         100.50,
-							ProcessedAt: now,
+							ProcessedAt: now.Format(time.RFC3339),
 						},
 						{
-							Number:      "98765432109",
+							Order:       "98765432109",
 							Sum:         200.75,
-							ProcessedAt: now.Add(time.Hour),
+							ProcessedAt: now.Add(time.Hour).Format(time.RFC3339),
 						},
 					}, nil)
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody: []WithdrawalsOut{
+			expectedBody: []usecase.WithdrawalOut{
 				{
 					Order:       "12345678903",
 					Sum:         100.50,
@@ -65,29 +64,26 @@ func TestWithdrawalsHandler_Withdrawals(t *testing.T) {
 		{
 			name:   "successful retrieval with no withdrawals",
 			method: http.MethodGet,
-			repoMock: func(m *mocks.MockWithdrawalsRepository) {
-				m.EXPECT().Withdrawals(gomock.Any(), userID).
-					Return([]models.Withdrawal{}, nil)
+			ucMock: func(m *mocks.MockWithdrawalsUsecase) {
+				m.EXPECT().GetWithdrawals(gomock.Any(), userID).
+					Return([]usecase.WithdrawalOut{}, nil)
 			},
 			expectedStatus: http.StatusNoContent,
-			expectedBody:   []WithdrawalsOut{},
 		},
 		{
-			name:   "repository error",
+			name:   "usecase error",
 			method: http.MethodGet,
-			repoMock: func(m *mocks.MockWithdrawalsRepository) {
-				m.EXPECT().Withdrawals(gomock.Any(), userID).
-					Return(nil, errors.New("database error"))
+			ucMock: func(m *mocks.MockWithdrawalsUsecase) {
+				m.EXPECT().GetWithdrawals(gomock.Any(), userID).
+					Return(nil, assert.AnError)
 			},
 			expectedStatus: http.StatusBadRequest,
-			expectedBody:   nil,
 		},
 		{
 			name:           "wrong method",
 			method:         http.MethodPost,
-			repoMock:       func(m *mocks.MockWithdrawalsRepository) {},
+			ucMock:         func(m *mocks.MockWithdrawalsUsecase) {},
 			expectedStatus: http.StatusMethodNotAllowed,
-			expectedBody:   nil,
 		},
 	}
 
@@ -97,11 +93,11 @@ func TestWithdrawalsHandler_Withdrawals(t *testing.T) {
 			defer ctrl.Finish()
 
 			// Create mock
-			mockRepo := mocks.NewMockWithdrawalsRepository(ctrl)
-			tt.repoMock(mockRepo)
+			mockUC := mocks.NewMockWithdrawalsUsecase(ctrl)
+			tt.ucMock(mockUC)
 
 			// Create handler
-			handler := NewWithdrawalsHandler(mockRepo)
+			handler := NewWithdrawalsHandler(mockUC)
 
 			// Create request
 			req := httptest.NewRequest(tt.method, "/", nil)
@@ -125,11 +121,13 @@ func TestWithdrawalsHandler_Withdrawals(t *testing.T) {
 			assert.Equal(t, tt.expectedStatus, rr.Code)
 
 			// Check response body if expected
-			if tt.expectedBody != nil {
-				var actualBody []WithdrawalsOut
+			if tt.expectedStatus == http.StatusOK {
+				var actualBody []usecase.WithdrawalOut
 				err := json.Unmarshal(rr.Body.Bytes(), &actualBody)
 				require.NoError(t, err)
 				assert.Equal(t, tt.expectedBody, actualBody)
+			} else if tt.expectedStatus == http.StatusNoContent {
+				assert.Empty(t, rr.Body.String())
 			}
 		})
 	}
@@ -140,10 +138,10 @@ func TestWithdrawalsHandler_Withdrawals_NoUserID(t *testing.T) {
 	defer ctrl.Finish()
 
 	// Create mock
-	mockRepo := mocks.NewMockWithdrawalsRepository(ctrl)
+	mockUC := mocks.NewMockWithdrawalsUsecase(ctrl)
 
 	// Create handler
-	handler := NewWithdrawalsHandler(mockRepo)
+	handler := NewWithdrawalsHandler(mockUC)
 
 	// Create request
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
