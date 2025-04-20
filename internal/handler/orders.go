@@ -36,6 +36,11 @@ func (handler OrdersHandler) Orders(res http.ResponseWriter, req *http.Request) 
 		return
 	}
 
+	if len(orders) == 0 {
+		res.WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	resp, err := json.Marshal(orders)
 	if err != nil {
 		http.Error(res, "Internal server error "+err.Error(), http.StatusInternalServerError)
@@ -43,11 +48,6 @@ func (handler OrdersHandler) Orders(res http.ResponseWriter, req *http.Request) 
 	}
 
 	res.Header().Set("Content-Type", "application/json")
-	if len(orders) == 0 {
-		res.WriteHeader(http.StatusNoContent)
-	} else {
-		res.WriteHeader(http.StatusOK)
-	}
-
+	res.WriteHeader(http.StatusOK)
 	res.Write(resp)
 }

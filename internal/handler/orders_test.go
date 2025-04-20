@@ -170,14 +170,27 @@ func TestOrdersHandler_Orders_UsecaseError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	userID := uuid.New()
+	ctx := context.Background()
+
 	// Create mock
 	mockUC := mocks.NewMockOrdersUsecase(ctrl)
+	mockUC.EXPECT().GetOrders(gomock.Any(), userID).Return(nil, assert.AnError)
 
 	// Create handler
 	handler := handler.NewOrdersHandler(mockUC)
 
 	// Create request
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req = req.WithContext(ctx)
+
+	// Set up auth cookie
+	token, err := auth.BuildJWTString(userID)
+	require.NoError(t, err)
+	req.AddCookie(&http.Cookie{
+		Name:  auth.AuthCookieName,
+		Value: token,
+	})
 
 	// Create response recorder
 	rr := httptest.NewRecorder()
@@ -193,14 +206,27 @@ func TestOrdersHandler_Orders_SuccessNoOrders(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	userID := uuid.New()
+	ctx := context.Background()
+
 	// Create mock
 	mockUC := mocks.NewMockOrdersUsecase(ctrl)
+	mockUC.EXPECT().GetOrders(gomock.Any(), userID).Return([]usecase.OrdersOut{}, nil)
 
 	// Create handler
 	handler := handler.NewOrdersHandler(mockUC)
 
 	// Create request
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req = req.WithContext(ctx)
+
+	// Set up auth cookie
+	token, err := auth.BuildJWTString(userID)
+	require.NoError(t, err)
+	req.AddCookie(&http.Cookie{
+		Name:  auth.AuthCookieName,
+		Value: token,
+	})
 
 	// Create response recorder
 	rr := httptest.NewRecorder()
@@ -216,14 +242,35 @@ func TestOrdersHandler_Orders_SuccessWithOrders(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	userID := uuid.New()
+	ctx := context.Background()
+	now := time.Now()
+
 	// Create mock
 	mockUC := mocks.NewMockOrdersUsecase(ctrl)
+	mockUC.EXPECT().GetOrders(gomock.Any(), userID).Return([]usecase.OrdersOut{
+		{
+			Number:     "12345678903",
+			Status:     constants.OrderStatusProcessed,
+			Accrual:    100.50,
+			UploadedAt: now.Format(time.RFC3339),
+		},
+	}, nil)
 
 	// Create handler
 	handler := handler.NewOrdersHandler(mockUC)
 
 	// Create request
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req = req.WithContext(ctx)
+
+	// Set up auth cookie
+	token, err := auth.BuildJWTString(userID)
+	require.NoError(t, err)
+	req.AddCookie(&http.Cookie{
+		Name:  auth.AuthCookieName,
+		Value: token,
+	})
 
 	// Create response recorder
 	rr := httptest.NewRecorder()
@@ -239,14 +286,41 @@ func TestOrdersHandler_Orders_SuccessWithOrders_Formatted(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	userID := uuid.New()
+	ctx := context.Background()
+	now := time.Now()
+
 	// Create mock
 	mockUC := mocks.NewMockOrdersUsecase(ctrl)
+	mockUC.EXPECT().GetOrders(gomock.Any(), userID).Return([]usecase.OrdersOut{
+		{
+			Number:     "12345678903",
+			Status:     constants.OrderStatusProcessed,
+			Accrual:    100.50,
+			UploadedAt: now.Format(time.RFC3339),
+		},
+		{
+			Number:     "12345678904",
+			Status:     constants.OrderStatusProcessing,
+			Accrual:    0,
+			UploadedAt: now.Format(time.RFC3339),
+		},
+	}, nil)
 
 	// Create handler
 	handler := handler.NewOrdersHandler(mockUC)
 
 	// Create request
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req = req.WithContext(ctx)
+
+	// Set up auth cookie
+	token, err := auth.BuildJWTString(userID)
+	require.NoError(t, err)
+	req.AddCookie(&http.Cookie{
+		Name:  auth.AuthCookieName,
+		Value: token,
+	})
 
 	// Create response recorder
 	rr := httptest.NewRecorder()
@@ -258,7 +332,7 @@ func TestOrdersHandler_Orders_SuccessWithOrders_Formatted(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rr.Code)
 
 	// Check response body
-	expectedBody := `[{"number":"12345678903","status":"PROCESSED","accrual":100.5,"uploaded_at":"` + time.Now().Format(time.RFC3339) + `"},{"number":"12345678904","status":"PROCESSING","accrual":0,"uploaded_at":"` + time.Now().Format(time.RFC3339) + `"}]`
+	expectedBody := `[{"number":"12345678903","status":"PROCESSED","accrual":100.5,"uploaded_at":"` + now.Format(time.RFC3339) + `"},{"number":"12345678904","status":"PROCESSING","accrual":0,"uploaded_at":"` + now.Format(time.RFC3339) + `"}]`
 	assert.Equal(t, expectedBody, rr.Body.String())
 }
 
@@ -266,14 +340,27 @@ func TestOrdersHandler_Orders_SuccessWithOrders_Formatted_NoOrders(t *testing.T)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	userID := uuid.New()
+	ctx := context.Background()
+
 	// Create mock
 	mockUC := mocks.NewMockOrdersUsecase(ctrl)
+	mockUC.EXPECT().GetOrders(gomock.Any(), userID).Return([]usecase.OrdersOut{}, nil)
 
 	// Create handler
 	handler := handler.NewOrdersHandler(mockUC)
 
 	// Create request
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req = req.WithContext(ctx)
+
+	// Set up auth cookie
+	token, err := auth.BuildJWTString(userID)
+	require.NoError(t, err)
+	req.AddCookie(&http.Cookie{
+		Name:  auth.AuthCookieName,
+		Value: token,
+	})
 
 	// Create response recorder
 	rr := httptest.NewRecorder()
@@ -282,25 +369,37 @@ func TestOrdersHandler_Orders_SuccessWithOrders_Formatted_NoOrders(t *testing.T)
 	handler.Orders(rr, req)
 
 	// Check status code
-	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, http.StatusNoContent, rr.Code)
 
-	// Check response body
-	expectedBody := `[]`
-	assert.Equal(t, expectedBody, rr.Body.String())
+	// Check response body is empty
+	assert.Empty(t, rr.Body.String())
 }
 
 func TestOrdersHandler_Orders_SuccessWithOrders_Formatted_RepositoryError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	userID := uuid.New()
+	ctx := context.Background()
+
 	// Create mock
 	mockUC := mocks.NewMockOrdersUsecase(ctrl)
+	mockUC.EXPECT().GetOrders(gomock.Any(), userID).Return(nil, assert.AnError)
 
 	// Create handler
 	handler := handler.NewOrdersHandler(mockUC)
 
 	// Create request
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req = req.WithContext(ctx)
+
+	// Set up auth cookie
+	token, err := auth.BuildJWTString(userID)
+	require.NoError(t, err)
+	req.AddCookie(&http.Cookie{
+		Name:  auth.AuthCookieName,
+		Value: token,
+	})
 
 	// Create response recorder
 	rr := httptest.NewRecorder()
@@ -312,8 +411,7 @@ func TestOrdersHandler_Orders_SuccessWithOrders_Formatted_RepositoryError(t *tes
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
 
 	// Check response body
-	expectedBody := assert.AnError.Error() + "\n"
-	assert.Equal(t, expectedBody, rr.Body.String())
+	assert.Equal(t, assert.AnError.Error()+"\n", rr.Body.String())
 }
 
 func TestOrdersHandler_Orders_SuccessWithOrders_Formatted_WrongMethod(t *testing.T) {
