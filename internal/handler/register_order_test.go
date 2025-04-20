@@ -3,7 +3,6 @@ package handler
 import (
 	"bytes"
 	"context"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,98 +18,99 @@ import (
 )
 
 func TestRegisterOrderHandler_RegisterOrder(t *testing.T) {
-	userID := uuid.New()
-	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
+	// Test cases
 	tests := []struct {
 		name           string
 		method         string
-		body           string
-		registrarMock  func(*mocks.MockOrderRegistrar)
+		userID         uuid.UUID
+		orderNumber    string
+		ucResult       constants.OrderRegistrationResult
+		ucError        error
 		expectedStatus int
+		expectedBody   string
 	}{
 		{
-			name:   "successful registration - already registered",
-			method: http.MethodPost,
-			body:   "12345678903",
-			registrarMock: func(m *mocks.MockOrderRegistrar) {
-				m.EXPECT().RegisterOrder(gomock.Any(), userID, "12345678903").
-					Return(constants.AlreadyRegistered, nil)
-			},
-			expectedStatus: http.StatusOK,
-		},
-		{
-			name:   "successful registration - accepted to processing",
-			method: http.MethodPost,
-			body:   "12345678903",
-			registrarMock: func(m *mocks.MockOrderRegistrar) {
-				m.EXPECT().RegisterOrder(gomock.Any(), userID, "12345678903").
-					Return(constants.AcceptedToProcessing, nil)
-			},
+			name:           "Successful order registration",
+			method:         http.MethodPost,
+			userID:         uuid.New(),
+			orderNumber:    "1234567890",
+			ucResult:       constants.AcceptedToProcessing,
 			expectedStatus: http.StatusAccepted,
 		},
 		{
-			name:   "wrong order number format",
-			method: http.MethodPost,
-			body:   "invalid",
-			registrarMock: func(m *mocks.MockOrderRegistrar) {
-				m.EXPECT().RegisterOrder(gomock.Any(), userID, "invalid").
-					Return(constants.WrongOrderNumberFormat, nil)
-			},
+			name:           "Already registered order",
+			method:         http.MethodPost,
+			userID:         uuid.New(),
+			orderNumber:    "1234567890",
+			ucResult:       constants.AlreadyRegistered,
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Wrong order number format",
+			method:         http.MethodPost,
+			userID:         uuid.New(),
+			orderNumber:    "invalid",
+			ucResult:       constants.WrongOrderNumberFormat,
 			expectedStatus: http.StatusUnprocessableEntity,
 		},
 		{
-			name:   "registered by another user",
-			method: http.MethodPost,
-			body:   "12345678903",
-			registrarMock: func(m *mocks.MockOrderRegistrar) {
-				m.EXPECT().RegisterOrder(gomock.Any(), userID, "12345678903").
-					Return(constants.RegisteredByAnotherUser, nil)
-			},
+			name:           "Order registered by another user",
+			method:         http.MethodPost,
+			userID:         uuid.New(),
+			orderNumber:    "1234567890",
+			ucResult:       constants.RegisteredByAnotherUser,
 			expectedStatus: http.StatusConflict,
 		},
 		{
-			name:           "wrong method",
-			method:         http.MethodGet,
-			body:           "12345678903",
-			registrarMock:  func(m *mocks.MockOrderRegistrar) {},
-			expectedStatus: http.StatusMethodNotAllowed,
+			name:           "Usecase error",
+			method:         http.MethodPost,
+			userID:         uuid.New(),
+			orderNumber:    "1234567890",
+			ucError:        assert.AnError,
+			expectedStatus: http.StatusInternalServerError,
+			expectedBody:   assert.AnError.Error() + "\n",
 		},
 		{
-			name:   "registrar error",
-			method: http.MethodPost,
-			body:   "12345678903",
-			registrarMock: func(m *mocks.MockOrderRegistrar) {
-				m.EXPECT().RegisterOrder(gomock.Any(), userID, "12345678903").
-					Return(constants.OrderRegistrationResult(0), errors.New("internal error"))
-			},
-			expectedStatus: http.StatusInternalServerError,
+			name:           "Wrong HTTP method",
+			method:         http.MethodGet,
+			expectedStatus: http.StatusMethodNotAllowed,
+			expectedBody:   "Only POST requests are allowed!\n",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
-			// Create mock
-			mockRegistrar := mocks.NewMockOrderRegistrar(ctrl)
-			tt.registrarMock(mockRegistrar)
+			// Setup mock usecase
+			mockUc := mocks.NewMockRegisterOrderUsecase(ctrl)
+			if tt.method == http.MethodPost {
+				mockUc.EXPECT().
+					RegisterOrder(gomock.Any(), tt.userID, tt.orderNumber).
+					Return(tt.ucResult, tt.ucError)
+			}
 
 			// Create handler
-			handler := NewRegisterOrderHandler(mockRegistrar)
+			handler := NewRegisterOrderHandler(mockUc)
 
 			// Create request
-			req := httptest.NewRequest(tt.method, "/", bytes.NewBufferString(tt.body))
-			req = req.WithContext(ctx)
+			var req *http.Request
+			if tt.method == http.MethodPost {
+				req = httptest.NewRequest(tt.method, "/api/user/orders", bytes.NewBufferString(tt.orderNumber))
+			} else {
+				req = httptest.NewRequest(tt.method, "/api/user/orders", nil)
+			}
 
-			// Set up auth cookie
-			token, err := auth.BuildJWTString(userID)
-			require.NoError(t, err)
-			req.AddCookie(&http.Cookie{
-				Name:  auth.AuthCookieName,
-				Value: token,
-			})
+			// Add auth cookie if userID is set
+			if tt.userID != uuid.Nil {
+				token, err := auth.BuildJWTString(tt.userID)
+				assert.NoError(t, err)
+				req.AddCookie(&http.Cookie{
+					Name:  auth.AuthCookieName,
+					Value: token,
+				})
+			}
 
 			// Create response recorder
 			rr := httptest.NewRecorder()
@@ -120,6 +120,11 @@ func TestRegisterOrderHandler_RegisterOrder(t *testing.T) {
 
 			// Check status code
 			assert.Equal(t, tt.expectedStatus, rr.Code)
+
+			// Check response body if expected
+			if tt.expectedBody != "" {
+				assert.Equal(t, tt.expectedBody, rr.Body.String())
+			}
 		})
 	}
 }
