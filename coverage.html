@@ -1,0 +1,2453 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>gophermart: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/iubondar/gophermart/cmd/gophermart/main.go (0.0%)</option>
+				
+				<option value="file1">github.com/iubondar/gophermart/internal/auth/auth.go (77.4%)</option>
+				
+				<option value="file2">github.com/iubondar/gophermart/internal/client/accrual.go (100.0%)</option>
+				
+				<option value="file3">github.com/iubondar/gophermart/internal/compress/gzip.go (73.9%)</option>
+				
+				<option value="file4">github.com/iubondar/gophermart/internal/config/config.go (86.7%)</option>
+				
+				<option value="file5">github.com/iubondar/gophermart/internal/handler/balance.go (81.0%)</option>
+				
+				<option value="file6">github.com/iubondar/gophermart/internal/handler/login.go (83.3%)</option>
+				
+				<option value="file7">github.com/iubondar/gophermart/internal/handler/mocks/mock_orders_repository.go (0.0%)</option>
+				
+				<option value="file8">github.com/iubondar/gophermart/internal/handler/orders.go (92.0%)</option>
+				
+				<option value="file9">github.com/iubondar/gophermart/internal/handler/register.go (87.9%)</option>
+				
+				<option value="file10">github.com/iubondar/gophermart/internal/handler/register_order.go (95.5%)</option>
+				
+				<option value="file11">github.com/iubondar/gophermart/internal/handler/withdraw.go (97.0%)</option>
+				
+				<option value="file12">github.com/iubondar/gophermart/internal/handler/withdrawals.go (92.0%)</option>
+				
+				<option value="file13">github.com/iubondar/gophermart/internal/logging/logging.go (94.4%)</option>
+				
+				<option value="file14">github.com/iubondar/gophermart/internal/mocks/mock_balance_repository.go (0.0%)</option>
+				
+				<option value="file15">github.com/iubondar/gophermart/internal/mocks/mock_login_checker.go (0.0%)</option>
+				
+				<option value="file16">github.com/iubondar/gophermart/internal/mocks/mock_order_registrar.go (0.0%)</option>
+				
+				<option value="file17">github.com/iubondar/gophermart/internal/mocks/mock_order_status_fetcher.go (0.0%)</option>
+				
+				<option value="file18">github.com/iubondar/gophermart/internal/mocks/mock_orders_repository.go (0.0%)</option>
+				
+				<option value="file19">github.com/iubondar/gophermart/internal/mocks/mock_user_registrar.go (0.0%)</option>
+				
+				<option value="file20">github.com/iubondar/gophermart/internal/mocks/mock_withdrawals_repository.go (0.0%)</option>
+				
+				<option value="file21">github.com/iubondar/gophermart/internal/mocks/mock_withdrawer.go (0.0%)</option>
+				
+				<option value="file22">github.com/iubondar/gophermart/internal/router/router.go (0.0%)</option>
+				
+				<option value="file23">github.com/iubondar/gophermart/internal/server/server.go (66.7%)</option>
+				
+				<option value="file24">github.com/iubondar/gophermart/internal/service/polling.go (95.2%)</option>
+				
+				<option value="file25">github.com/iubondar/gophermart/internal/storage/storage.go (73.7%)</option>
+				
+				<option value="file26">github.com/iubondar/gophermart/internal/testhelpers/container.go (0.0%)</option>
+				
+				<option value="file27">github.com/iubondar/gophermart/internal/testhelpers/readers.go (0.0%)</option>
+				
+				<option value="file28">github.com/iubondar/gophermart/internal/validator/validator.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "log"
+        "os"
+
+        "github.com/iubondar/gophermart/internal/client"
+        "github.com/iubondar/gophermart/internal/config"
+        "github.com/iubondar/gophermart/internal/router"
+        "github.com/iubondar/gophermart/internal/server"
+        "github.com/iubondar/gophermart/internal/service"
+        "github.com/iubondar/gophermart/internal/storage"
+        "go.uber.org/zap"
+)
+
+func init() <span class="cov0" title="0">{
+        zap.ReplaceGlobals(zap.Must(zap.NewDevelopment()))
+}</span>
+
+func main() <span class="cov0" title="0">{
+        config, err := config.NewConfig(os.Args[0], os.Args[1:])
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+
+        <span class="cov0" title="0">storage, err := storage.NewStorage(config.DatabaseURI)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+
+        <span class="cov0" title="0">accrualClient := client.NewAccrualClient(config.AccrualSystemAddress)
+
+        pollingService := service.NewPollingService(
+                config.PollingInterval,
+                config.FetchingLimit,
+                accrualClient,
+                storage,
+        )
+        pollingService.Start()
+
+        router, err := router.NewRouter(storage)
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+
+        // Создаем и запускаем сервер
+        <span class="cov0" title="0">srv := server.New(config.RunAddress, router)
+        if err := srv.Start(); err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package auth
+
+import (
+        "fmt"
+        "net/http"
+
+        "github.com/golang-jwt/jwt/v4"
+        "github.com/google/uuid"
+        "go.uber.org/zap"
+)
+
+const secretKey = "supersecretkey"
+const AuthCookieName = "Authorization"
+const UserIDKey = "userID"
+
+// claims — структура утверждений, которая включает стандартные утверждения и
+// одно пользовательское UserID
+type claims struct {
+        jwt.RegisteredClaims
+        UserID uuid.UUID
+}
+
+func SetNewAuthCookie(userID uuid.UUID, res http.ResponseWriter) error <span class="cov8" title="1">{
+        jwtString, err := BuildJWTString(userID)
+        if err != nil </span><span class="cov0" title="0">{
+                zap.L().Sugar().Debugln("Error building jwtString", err.Error())
+                return err
+        }</span>
+
+        <span class="cov8" title="1">authCookie := &amp;http.Cookie{
+                Name:     AuthCookieName,
+                Value:    jwtString,
+                HttpOnly: true, // Prevents JavaScript access
+                SameSite: http.SameSiteLaxMode,
+                Path:     "/",
+                MaxAge:   3600, // Cookie expires in 1 hour
+        }
+
+        http.SetCookie(res, authCookie)
+
+        return nil</span>
+}
+
+// BuildJWTString создаёт токен и возвращает его в виде строки.
+func BuildJWTString(userID uuid.UUID) (string, error) <span class="cov8" title="1">{
+        // создаём новый токен с алгоритмом подписи HS256 и утверждениями — Claims
+        token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims{
+                RegisteredClaims: jwt.RegisteredClaims{},
+                // собственное утверждение
+                UserID: userID,
+        })
+
+        // создаём строку токена
+        tokenString, err := token.SignedString([]byte(secretKey))
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+
+        // возвращаем строку токена
+        <span class="cov8" title="1">return tokenString, nil</span>
+}
+
+func GetUserIDFromReq(req *http.Request) (userID uuid.UUID, err error) <span class="cov8" title="1">{
+        authCookie, err := req.Cookie(AuthCookieName)
+        if err != nil </span><span class="cov8" title="1">{
+                zap.L().Sugar().Debugln("No auth cookie found")
+                return uuid.Nil, err
+        }</span>
+
+        <span class="cov8" title="1">userID, err = getUserID(authCookie.Value)
+        if err != nil </span><span class="cov0" title="0">{
+                zap.L().Sugar().Debugln("Error getting user id from cookie. Message: ", err.Error())
+                return uuid.Nil, err
+        }</span>
+
+        <span class="cov8" title="1">return userID, nil</span>
+}
+
+func getUserID(tokenString string) (userID uuid.UUID, err error) <span class="cov8" title="1">{
+        claims := &amp;claims{}
+        token, err := jwt.ParseWithClaims(tokenString, claims,
+                func(t *jwt.Token) (interface{}, error) </span><span class="cov8" title="1">{
+                        if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok </span><span class="cov0" title="0">{
+                                return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+                        }</span>
+                        <span class="cov8" title="1">return []byte(secretKey), nil</span>
+                })
+        <span class="cov8" title="1">if err != nil </span><span class="cov8" title="1">{
+                return uuid.Nil, err
+        }</span>
+
+        <span class="cov8" title="1">if !token.Valid </span><span class="cov0" title="0">{
+                return uuid.Nil, fmt.Errorf("token is not valid")
+        }</span>
+
+        <span class="cov8" title="1">return claims.UserID, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package client
+
+import (
+        "context"
+        "fmt"
+        "net/http"
+
+        "github.com/go-resty/resty/v2"
+        "github.com/iubondar/gophermart/internal/constants"
+        "github.com/iubondar/gophermart/internal/models"
+        "go.uber.org/zap"
+)
+
+type (
+        AccrualClient struct {
+                httpc *resty.Client
+        }
+
+        accrualStatus struct {
+                Order   string  `json:"order"`
+                Status  string  `json:"status"`
+                Accrual float32 `json:"accrual"`
+        }
+)
+
+func NewAccrualClient(accrualSystemAddress string) *AccrualClient <span class="cov8" title="1">{
+        client := resty.New().SetBaseURL(accrualSystemAddress)
+
+        return &amp;AccrualClient{
+                httpc: client,
+        }
+}</span>
+
+func (c AccrualClient) FetchOrderStatus(ctx context.Context, order models.Order) (out models.OrderStatus, err error) <span class="cov8" title="1">{
+        var result accrualStatus
+        resp, err := c.httpc.R().SetContext(ctx).SetResult(&amp;result).Get("/api/orders/" + order.Number)
+
+        zap.L().Sugar().Debugln(
+                "Accrual response info:",
+                "Error:", err,
+                "Status Code:", resp.StatusCode(),
+                "Status:", resp.Status(),
+                "Time:", resp.Time(),
+                "Body:\n", resp,
+        )
+
+        if err != nil </span><span class="cov8" title="1">{
+                zap.L().Sugar().Debugln("Error fetching order status, number ", order.Number, ", error: ", err.Error())
+                return models.OrderStatus{}, err
+        }</span>
+
+        <span class="cov8" title="1">if resp.StatusCode() &gt;= 400 </span><span class="cov8" title="1">{
+                return models.OrderStatus{}, fmt.Errorf("fetching order status: %s", resp.Status())
+        }</span>
+
+        <span class="cov8" title="1">if resp.StatusCode() == http.StatusNoContent </span><span class="cov8" title="1">{
+                return models.OrderStatus{
+                        UserID:  order.UserID,
+                        Number:  order.Number,
+                        Status:  constants.OrderStatusNew,
+                        Accrual: 0,
+                }, nil
+        }</span>
+
+        // Validate that the order number in response matches the request
+        <span class="cov8" title="1">if result.Order != order.Number </span><span class="cov8" title="1">{
+                return models.OrderStatus{}, fmt.Errorf("order number mismatch: expected %s, got %s", order.Number, result.Order)
+        }</span>
+
+        <span class="cov8" title="1">return models.OrderStatus{
+                UserID:  order.UserID,
+                Number:  order.Number,
+                Status:  mapAccrualStatus(result.Status),
+                Accrual: result.Accrual,
+        }, nil</span>
+}
+
+func mapAccrualStatus(accrualStatus string) constants.OrderStatus <span class="cov8" title="1">{
+        switch accrualStatus </span>{
+        case "REGISTERED":<span class="cov8" title="1">
+                return constants.OrderStatusProcessing</span>
+        case "INVALID":<span class="cov8" title="1">
+                return constants.OrderStatusInvalid</span>
+        case "PROCESSING":<span class="cov8" title="1">
+                return constants.OrderStatusProcessing</span>
+        case "PROCESSED":<span class="cov8" title="1">
+                return constants.OrderStatusProcessed</span>
+        default:<span class="cov8" title="1">
+                return constants.OrderStatusNew</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package compress
+
+import (
+        "compress/gzip"
+        "io"
+        "net/http"
+        "strings"
+)
+
+var compressingContentTypes []string = []string{"application/json", "text/html"}
+
+const (
+        acceptEncoding  = "Accept-Encoding"
+        contentEncoding = "Content-Encoding"
+        contentType     = "Content-Type"
+)
+
+func shouldCompress(ct string) bool <span class="cov8" title="1">{
+        // return true
+        for _, contentType := range compressingContentTypes </span><span class="cov8" title="1">{
+                if strings.Contains(ct, contentType) </span><span class="cov8" title="1">{
+                        return true
+                }</span>
+        }
+        <span class="cov0" title="0">return false</span>
+}
+
+// gzipWriter реализует интерфейс http.ResponseWriter и позволяет прозрачно для сервера
+// сжимать передаваемые данные и выставлять правильные HTTP-заголовки
+type gzipWriter struct {
+        w  http.ResponseWriter
+        zw *gzip.Writer
+}
+
+func newGzipWriter(w http.ResponseWriter) *gzipWriter <span class="cov8" title="1">{
+        return &amp;gzipWriter{
+                w:  w,
+                zw: gzip.NewWriter(w),
+        }
+}</span>
+
+// http.ResponseWriter implementation
+func (c *gzipWriter) Header() http.Header <span class="cov8" title="1">{
+        return c.w.Header()
+}</span>
+
+func (c *gzipWriter) Write(p []byte) (int, error) <span class="cov8" title="1">{
+        ct := c.w.Header().Get(contentType)
+        if shouldCompress(ct) </span><span class="cov8" title="1">{
+                // Сжимаем только если контент нужного типа
+                c.w.Header().Set(contentEncoding, "gzip")
+                return c.zw.Write(p)
+        }</span>
+        <span class="cov0" title="0">return c.w.Write(p)</span>
+}
+
+func (c *gzipWriter) WriteHeader(statusCode int) <span class="cov0" title="0">{
+        ct := c.w.Header().Get(contentType)
+        if shouldCompress(ct) &amp;&amp; (statusCode &lt; 300 || statusCode == http.StatusConflict) </span><span class="cov0" title="0">{
+                c.w.Header().Set(contentEncoding, "gzip")
+        }</span>
+        <span class="cov0" title="0">c.w.WriteHeader(statusCode)</span>
+}
+
+// Close закрывает gzip.Writer и досылает все данные из буфера.
+func (c *gzipWriter) Close() error <span class="cov8" title="1">{
+        ct := c.w.Header().Get(contentType)
+        if shouldCompress(ct) </span><span class="cov8" title="1">{
+                return c.zw.Close()
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+// gzipReader реализует интерфейс io.ReadCloser и позволяет прозрачно для сервера
+// декомпрессировать получаемые от клиента данные
+type gzipReader struct {
+        r  io.ReadCloser
+        zr *gzip.Reader
+}
+
+func newGzipReader(r io.ReadCloser) (*gzipReader, error) <span class="cov8" title="1">{
+        zr, err := gzip.NewReader(r)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return &amp;gzipReader{
+                r:  r,
+                zr: zr,
+        }, nil</span>
+}
+
+// io.ReadCloser implementation
+func (c gzipReader) Read(p []byte) (n int, err error) <span class="cov0" title="0">{
+        return c.zr.Read(p)
+}</span>
+
+func (c *gzipReader) Close() error <span class="cov8" title="1">{
+        if err := c.r.Close(); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return c.zr.Close()</span>
+}
+
+// Middleware для поддержки gzip
+func WithGzipCompression(h http.Handler) http.Handler <span class="cov8" title="1">{
+        compressFn := func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                // по умолчанию устанавливаем оригинальный http.ResponseWriter как тот,
+                // который будем передавать следующей функции
+                ow := w
+
+                // проверяем, что клиент умеет получать от сервера сжатые данные в формате gzip
+                acceptEncoding := r.Header.Get(acceptEncoding)
+                supportsGzip := strings.Contains(acceptEncoding, "gzip")
+                if supportsGzip </span><span class="cov8" title="1">{
+                        // оборачиваем оригинальный http.ResponseWriter новым с поддержкой сжатия
+                        cw := newGzipWriter(w)
+                        // меняем оригинальный http.ResponseWriter на новый
+                        ow = cw
+                        // не забываем отправить клиенту все сжатые данные после завершения middleware
+                        defer cw.Close()
+                }</span>
+
+                // проверяем, что клиент отправил серверу сжатые данные в формате gzip
+                <span class="cov8" title="1">contentEncoding := r.Header.Get(contentEncoding)
+                sendsGzip := strings.Contains(contentEncoding, "gzip")
+                if sendsGzip </span><span class="cov8" title="1">{
+                        // оборачиваем тело запроса в io.Reader с поддержкой декомпрессии
+                        cr, err := newGzipReader(r.Body)
+                        if err != nil </span><span class="cov0" title="0">{
+                                w.WriteHeader(http.StatusInternalServerError)
+                                return
+                        }</span>
+                        // меняем тело запроса на новое
+                        <span class="cov8" title="1">r.Body = cr
+                        defer cr.Close()</span>
+                }
+
+                // передаём управление хендлеру
+                <span class="cov8" title="1">h.ServeHTTP(ow, r)</span>
+        }
+        <span class="cov8" title="1">return http.HandlerFunc(compressFn)</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package config
+
+import (
+        "flag"
+        "time"
+
+        "github.com/caarlos0/env"
+        "go.uber.org/zap"
+)
+
+type Config struct {
+        RunAddress           string        `env:"RUN_ADDRESS"`
+        DatabaseURI          string        `env:"DATABASE_URI"`
+        AccrualSystemAddress string        `env:"ACCRUAL_SYSTEM_ADDRESS"`
+        PollingInterval      time.Duration `env:"POLLING_INTERVAL"`
+        FetchingLimit        int           `env:"FETCHING_LIMIT"`
+}
+
+// для локальной разработки
+const (
+        defaultRunAddress           = "localhost:8000"
+        defaultDatabaseURI          = "host=localhost user=newuser password=password dbname=gophermart sslmode=disable"
+        defaultAccrualSystemAddress = "http://localhost:8080"
+        defaultPollingInterval      = 1 * time.Second
+        defaultFetchingLimit        = 10
+)
+
+func NewConfig(progname string, args []string) (*Config, error) <span class="cov8" title="1">{
+        var c Config
+
+        // https://eli.thegreenplace.net/2020/testing-flag-parsing-in-go-programs/
+        // Загружаем значения из переданных аргументов командной строки
+        flags := flag.NewFlagSet(progname, flag.ContinueOnError)
+
+        flags.StringVar(&amp;c.RunAddress, "a", defaultRunAddress, "address to run server")
+        flags.StringVar(&amp;c.DatabaseURI, "d", defaultDatabaseURI, "database dsn")
+        flags.StringVar(&amp;c.AccrualSystemAddress, "r", defaultAccrualSystemAddress, "address to connect to accrual service")
+        flags.DurationVar(&amp;c.PollingInterval, "i", defaultPollingInterval, "polling interval for accrual service")
+        flags.IntVar(&amp;c.FetchingLimit, "l", defaultFetchingLimit, "limit of orders to fetch in one request")
+
+        err := flags.Parse(args)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // Переписываем значения из переменных окружения
+        <span class="cov8" title="1">err = env.Parse(&amp;c)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">zap.L().Sugar().Debugln(
+                "Config: ",
+                "RunAddress", c.RunAddress,
+                "DatabaseURI", c.DatabaseURI,
+                "AccrualSystemAddress", c.AccrualSystemAddress,
+                "PollingInterval", c.PollingInterval,
+                "FetchingLimit", c.FetchingLimit,
+        )
+
+        return &amp;c, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package handler
+
+import (
+        "context"
+        "encoding/json"
+        "net/http"
+
+        "github.com/google/uuid"
+        "github.com/iubondar/gophermart/internal/auth"
+        "github.com/iubondar/gophermart/internal/models"
+        "go.uber.org/zap"
+)
+
+type BalanceRepository interface {
+        Account(ctx context.Context, userID uuid.UUID) (account models.Account, err error)
+}
+
+type BalanceOut struct {
+        Current   float32 `json:"current"`
+        Withdrawn float32 `json:"withdrawn"`
+}
+
+type BalanceHandler struct {
+        repo BalanceRepository
+}
+
+func NewBalanceHandler(repo BalanceRepository) BalanceHandler <span class="cov8" title="1">{
+        return BalanceHandler{
+                repo: repo,
+        }
+}</span>
+
+func (handler BalanceHandler) Balance(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodGet </span><span class="cov8" title="1">{
+                http.Error(res, "Only GET requests are allowed!", http.StatusMethodNotAllowed)
+                return
+        }</span>
+
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(res, err.Error(), http.StatusUnauthorized)
+                return
+        }</span>
+
+        <span class="cov8" title="1">account, err := handler.repo.Account(req.Context(), userID)
+        if err != nil </span><span class="cov8" title="1">{
+                zap.L().Sugar().Debugln("Error query account:", err.Error())
+                http.Error(res, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">out := BalanceOut{
+                Current:   account.Balance,
+                Withdrawn: account.WithdrawalSum,
+        }
+
+        resp, err := json.Marshal(out)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(res, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="1">res.Header().Set("Content-Type", "application/json")
+        res.WriteHeader(http.StatusOK)
+        res.Write(resp)</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package handler
+
+import (
+        "bytes"
+        "context"
+        "encoding/json"
+        "net/http"
+
+        "github.com/google/uuid"
+        "github.com/iubondar/gophermart/internal/auth"
+)
+
+type LoginIn struct {
+        Login    string `json:"login"`
+        Password string `json:"password"`
+}
+
+type LoginChecker interface {
+        CheckLogin(ctx context.Context, login string, passwordHash string) (userID uuid.UUID, err error)
+}
+
+type LoginHandler struct {
+        checker LoginChecker
+}
+
+func NewLoginHandler(checker LoginChecker) *LoginHandler <span class="cov8" title="1">{
+        return &amp;LoginHandler{
+                checker: checker,
+        }
+}</span>
+
+func (handler LoginHandler) Login(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodPost </span><span class="cov8" title="1">{
+                http.Error(res, "Only POST requests are allowed!", http.StatusMethodNotAllowed)
+                return
+        }</span>
+
+        <span class="cov8" title="1">var in LoginIn
+        var buf bytes.Buffer
+        // читаем тело запроса
+        _, err := buf.ReadFrom(req.Body)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(res, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        // десериализуем JSON
+        <span class="cov8" title="1">if err = json.Unmarshal(buf.Bytes(), &amp;in); err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">userID, err := handler.checker.CheckLogin(req.Context(), in.Login, in.Password)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="1">if userID != uuid.Nil </span><span class="cov8" title="1">{
+                // обновляем авторизационную куку и её срок действия
+                err = auth.SetNewAuthCookie(userID, res)
+                if err != nil </span><span class="cov0" title="0">{
+                        http.Error(res, err.Error(), http.StatusInternalServerError)
+                        return
+                }</span>
+
+                <span class="cov8" title="1">res.WriteHeader(http.StatusOK)</span>
+        } else<span class="cov8" title="1"> {
+                res.WriteHeader(http.StatusUnauthorized)
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/orders.go
+
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        gomock "go.uber.org/mock/gomock"
+        models "github.com/iubondar/gophermart/internal/models"
+)
+
+// MockOrdersRepository is a mock of OrdersRepository interface.
+type MockOrdersRepository struct {
+        ctrl     *gomock.Controller
+        recorder *MockOrdersRepositoryMockRecorder
+}
+
+// MockOrdersRepositoryMockRecorder is the mock recorder for MockOrdersRepository.
+type MockOrdersRepositoryMockRecorder struct {
+        mock *MockOrdersRepository
+}
+
+// NewMockOrdersRepository creates a new mock instance.
+func NewMockOrdersRepository(ctrl *gomock.Controller) *MockOrdersRepository <span class="cov0" title="0">{
+        mock := &amp;MockOrdersRepository{ctrl: ctrl}
+        mock.recorder = &amp;MockOrdersRepositoryMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrdersRepository) EXPECT() *MockOrdersRepositoryMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Orders mocks base method.
+func (m *MockOrdersRepository) Orders(ctx context.Context, userID uuid.UUID) ([]models.Order, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Orders", ctx, userID)
+        ret0, _ := ret[0].([]models.Order)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Orders indicates an expected call of Orders.
+func (mr *MockOrdersRepositoryMockRecorder) Orders(ctx, userID interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Orders", reflect.TypeOf((*MockOrdersRepository)(nil).Orders), ctx, userID)
+}</span> </pre>
+		
+		<pre class="file" id="file8" style="display: none">package handler
+
+import (
+        "context"
+        "encoding/json"
+        "net/http"
+        "time"
+
+        "github.com/google/uuid"
+        "github.com/iubondar/gophermart/internal/auth"
+        "github.com/iubondar/gophermart/internal/constants"
+        "github.com/iubondar/gophermart/internal/models"
+)
+
+type OrdersRepository interface {
+        Orders(ctx context.Context, userID uuid.UUID) (orders []models.Order, err error)
+}
+
+type OrdersOut struct {
+        Number     string                `json:"number"`
+        Status     constants.OrderStatus `json:"status"`
+        Accrual    float32               `json:"accrual"`
+        UploadedAt string                `json:"uploaded_at"`
+}
+
+type OrdersHandler struct {
+        repo OrdersRepository
+}
+
+func NewOrdersHandler(repo OrdersRepository) OrdersHandler <span class="cov8" title="1">{
+        return OrdersHandler{
+                repo: repo,
+        }
+}</span>
+
+func (handler OrdersHandler) Orders(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodGet </span><span class="cov8" title="1">{
+                http.Error(res, "Only GET requests are allowed!", http.StatusMethodNotAllowed)
+                return
+        }</span>
+
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusUnauthorized)
+                return
+        }</span>
+
+        <span class="cov8" title="1">orders, err := handler.repo.Orders(req.Context(), userID)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">out := make([]OrdersOut, 0, len(orders))
+        for i := range orders </span><span class="cov8" title="1">{
+                outElem := OrdersOut{
+                        Number:     orders[i].Number,
+                        Status:     orders[i].Status,
+                        Accrual:    orders[i].Accrual,
+                        UploadedAt: orders[i].UploadedAt.Format(time.RFC3339),
+                }
+                out = append(out, outElem)
+        }</span>
+
+        <span class="cov8" title="1">resp, err := json.Marshal(out)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(res, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="1">res.Header().Set("Content-Type", "application/json")
+        if len(out) == 0 </span><span class="cov8" title="1">{
+                res.WriteHeader(http.StatusNoContent)
+        }</span> else<span class="cov8" title="1"> {
+                res.WriteHeader(http.StatusOK)
+        }</span>
+
+        <span class="cov8" title="1">res.Write(resp)</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package handler
+
+import (
+        "bytes"
+        "context"
+        "encoding/json"
+        "net/http"
+
+        "github.com/google/uuid"
+        "github.com/iubondar/gophermart/internal/auth"
+        "golang.org/x/crypto/bcrypt"
+)
+
+type RegisterIn struct {
+        Login    string `json:"login"`
+        Password string `json:"password"`
+}
+
+type UserRegistrar interface {
+        Register(ctx context.Context, userID uuid.UUID, login string, passwordHash string) (ok bool, err error)
+}
+
+type RegisterHandler struct {
+        registrator UserRegistrar
+}
+
+func NewRegisterHandler(registrator UserRegistrar) *RegisterHandler <span class="cov8" title="1">{
+        return &amp;RegisterHandler{
+                registrator: registrator,
+        }
+}</span>
+
+func (handler RegisterHandler) Register(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodPost </span><span class="cov8" title="1">{
+                http.Error(res, "Only POST requests are allowed!", http.StatusMethodNotAllowed)
+                return
+        }</span>
+
+        <span class="cov8" title="1">var in RegisterIn
+        var buf bytes.Buffer
+        // читаем тело запроса
+        _, err := buf.ReadFrom(req.Body)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        // десериализуем JSON
+        <span class="cov8" title="1">if err = json.Unmarshal(buf.Bytes(), &amp;in); err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">if len(in.Login) &lt; 1 || len(in.Password) &lt; 1 </span><span class="cov8" title="1">{
+                http.Error(res, "Login or password is empty", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">hashedPassword, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(res, "Error hashing password "+err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="1">userID := uuid.New()
+        ok, err := handler.registrator.Register(req.Context(), userID, in.Login, string(hashedPassword))
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, "Failed to register user", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">if !ok </span><span class="cov8" title="1">{
+                res.WriteHeader(http.StatusConflict)
+                return
+        }</span>
+
+        <span class="cov8" title="1">err = auth.SetNewAuthCookie(userID, res)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(res, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="1">res.WriteHeader(http.StatusOK)</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package handler
+
+import (
+        "context"
+        "io"
+        "net/http"
+
+        "github.com/google/uuid"
+        "github.com/iubondar/gophermart/internal/auth"
+        "github.com/iubondar/gophermart/internal/constants"
+)
+
+type OrderRegistrar interface {
+        RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumber string) (result constants.OrderRegistrationResult, err error)
+}
+
+type RegisterOrderHandler struct {
+        registrar OrderRegistrar
+}
+
+func NewRegisterOrderHandler(registrar OrderRegistrar) *RegisterOrderHandler <span class="cov8" title="1">{
+        return &amp;RegisterOrderHandler{
+                registrar: registrar,
+        }
+}</span>
+
+func (handler RegisterOrderHandler) RegisterOrder(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodPost </span><span class="cov8" title="1">{
+                http.Error(res, "Only POST requests are allowed!", http.StatusMethodNotAllowed)
+                return
+        }</span>
+
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusUnauthorized)
+                return
+        }</span>
+
+        <span class="cov8" title="1">body, err := io.ReadAll(req.Body)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="1">result, err := handler.registrar.RegisterOrder(req.Context(), userID, string(body))
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="1">switch result </span>{
+        case constants.AlreadyRegistered:<span class="cov8" title="1">
+                res.WriteHeader(http.StatusOK)</span>
+        case constants.AcceptedToProcessing:<span class="cov8" title="1">
+                res.WriteHeader(http.StatusAccepted)</span>
+        case constants.WrongOrderNumberFormat:<span class="cov8" title="1">
+                res.WriteHeader(http.StatusUnprocessableEntity)</span>
+        case constants.RegisteredByAnotherUser:<span class="cov8" title="1">
+                res.WriteHeader(http.StatusConflict)</span>
+        default:<span class="cov0" title="0">
+                http.Error(res, "Wrong format", http.StatusBadRequest)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package handler
+
+import (
+        "bytes"
+        "context"
+        "encoding/json"
+        "net/http"
+
+        "github.com/google/uuid"
+        "github.com/iubondar/gophermart/internal/auth"
+        "github.com/iubondar/gophermart/internal/constants"
+        "go.uber.org/zap"
+)
+
+type Withdrawer interface {
+        Withdraw(ctx context.Context, userID uuid.UUID, orderNumber string, sum float32) (result constants.WithdrawResult, err error)
+}
+
+type WithdrawIn struct {
+        Order string  `json:"order"`
+        Sum   float32 `json:"sum"`
+}
+
+type WithdrawHandler struct {
+        withdrawer Withdrawer
+}
+
+func NewWithdrawHandler(withdrawer Withdrawer) *WithdrawHandler <span class="cov8" title="1">{
+        return &amp;WithdrawHandler{
+                withdrawer: withdrawer,
+        }
+}</span>
+
+func (handler WithdrawHandler) Withdraw(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodPost </span><span class="cov8" title="1">{
+                http.Error(res, "Only POST requests are allowed!", http.StatusMethodNotAllowed)
+                return
+        }</span>
+
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusUnauthorized)
+                return
+        }</span>
+
+        <span class="cov8" title="1">var in WithdrawIn
+        var buf bytes.Buffer
+        // читаем тело запроса
+        _, err = buf.ReadFrom(req.Body)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        // десериализуем JSON
+        <span class="cov8" title="1">if err = json.Unmarshal(buf.Bytes(), &amp;in); err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        // Validate input
+        <span class="cov8" title="1">if in.Order == "" </span><span class="cov8" title="1">{
+                http.Error(res, "Order number is required", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">if in.Sum &lt;= 0 </span><span class="cov8" title="1">{
+                http.Error(res, "Sum must be greater than 0", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">result, err := handler.withdrawer.Withdraw(req.Context(), userID, in.Order, in.Sum)
+        if err != nil </span><span class="cov8" title="1">{
+                zap.L().Sugar().Debugln("Error withdrawing balance:", err.Error())
+                http.Error(res, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="1">switch result </span>{
+        case constants.Success:<span class="cov8" title="1">
+                res.WriteHeader(http.StatusOK)</span>
+        case constants.InsufficientFunds:<span class="cov8" title="1">
+                res.WriteHeader(http.StatusPaymentRequired)</span>
+        case constants.WrongOrderFormat:<span class="cov8" title="1">
+                res.WriteHeader(http.StatusUnprocessableEntity)</span>
+        default:<span class="cov0" title="0">
+                http.Error(res, "Wrong format", http.StatusBadRequest)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package handler
+
+import (
+        "context"
+        "encoding/json"
+        "net/http"
+        "time"
+
+        "github.com/google/uuid"
+        "github.com/iubondar/gophermart/internal/auth"
+        "github.com/iubondar/gophermart/internal/models"
+)
+
+type WithdrawalsRepository interface {
+        Withdrawals(ctx context.Context, userID uuid.UUID) (withdrawal []models.Withdrawal, err error)
+}
+
+type WithdrawalsOut struct {
+        Order       string  `json:"order"`
+        Sum         float32 `json:"sum"`
+        ProcessedAt string  `json:"processed_at"`
+}
+
+type WithdrawalsHandler struct {
+        repo WithdrawalsRepository
+}
+
+func NewWithdrawalsHandler(repo WithdrawalsRepository) WithdrawalsHandler <span class="cov8" title="1">{
+        return WithdrawalsHandler{
+                repo: repo,
+        }
+}</span>
+
+func (handler WithdrawalsHandler) Withdrawals(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if req.Method != http.MethodGet </span><span class="cov8" title="1">{
+                http.Error(res, "Only GET requests are allowed!", http.StatusMethodNotAllowed)
+                return
+        }</span>
+
+        <span class="cov8" title="1">userID, err := auth.GetUserIDFromReq(req)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusUnauthorized)
+                return
+        }</span>
+
+        <span class="cov8" title="1">withdrawals, err := handler.repo.Withdrawals(req.Context(), userID)
+        if err != nil </span><span class="cov8" title="1">{
+                http.Error(res, err.Error(), http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">out := make([]WithdrawalsOut, 0, len(withdrawals))
+        for i := range withdrawals </span><span class="cov8" title="1">{
+                outElem := WithdrawalsOut{
+                        Order:       withdrawals[i].Number,
+                        Sum:         withdrawals[i].Sum,
+                        ProcessedAt: withdrawals[i].ProcessedAt.Format(time.RFC3339),
+                }
+                out = append(out, outElem)
+        }</span>
+
+        <span class="cov8" title="1">resp, err := json.Marshal(out)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(res, err.Error(), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov8" title="1">res.Header().Set("Content-Type", "application/json")
+        if len(out) == 0 </span><span class="cov8" title="1">{
+                res.WriteHeader(http.StatusNoContent)
+        }</span> else<span class="cov8" title="1"> {
+                res.WriteHeader(http.StatusOK)
+        }</span>
+
+        <span class="cov8" title="1">res.Write(resp)</span>
+}
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package logging
+
+import (
+        "log"
+        "net/http"
+        "time"
+
+        "go.uber.org/zap"
+)
+
+type (
+        // берём структуру для хранения сведений об ответе
+        responseData struct {
+                status int
+                size   int
+        }
+
+        // добавляем реализацию http.ResponseWriter
+        loggingResponseWriter struct {
+                http.ResponseWriter // встраиваем оригинальный http.ResponseWriter
+                responseData        *responseData
+        }
+)
+
+func (r *loggingResponseWriter) Write(b []byte) (int, error) <span class="cov8" title="1">{
+        // записываем ответ, используя оригинальный http.ResponseWriter
+        size, err := r.ResponseWriter.Write(b)
+        r.responseData.size += size // захватываем размер
+        return size, err
+}</span>
+
+func (r *loggingResponseWriter) WriteHeader(statusCode int) <span class="cov8" title="1">{
+        // записываем код статуса, используя оригинальный http.ResponseWriter
+        r.ResponseWriter.WriteHeader(statusCode)
+        r.responseData.status = statusCode // захватываем код статуса
+}</span>
+
+func WithLogging(h http.Handler) http.Handler <span class="cov8" title="1">{
+        logFn := func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                logger, err := zap.NewDevelopment()
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Fatalf("can't initialize zap logger: %v", err)
+                }</span>
+                <span class="cov8" title="1">defer logger.Sync()
+
+                sugar := *logger.Sugar()
+
+                start := time.Now()
+
+                responseData := &amp;responseData{
+                        status: 0,
+                        size:   0,
+                }
+                lw := loggingResponseWriter{
+                        ResponseWriter: w, // встраиваем оригинальный http.ResponseWriter
+                        responseData:   responseData,
+                }
+                h.ServeHTTP(&amp;lw, r) // внедряем реализацию http.ResponseWriter
+
+                duration := time.Since(start)
+
+                sugar.Infoln(
+                        "uri", r.RequestURI,
+                        "method", r.Method,
+                        "status", responseData.status, // получаем перехваченный код статуса ответа
+                        "duration", duration,
+                        "size", responseData.size, // получаем перехваченный размер ответа
+                )</span>
+        }
+        <span class="cov8" title="1">return http.HandlerFunc(logFn)</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/balance.go
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        models "github.com/iubondar/gophermart/internal/models"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockBalanceRepository is a mock of BalanceRepository interface.
+type MockBalanceRepository struct {
+        ctrl     *gomock.Controller
+        recorder *MockBalanceRepositoryMockRecorder
+}
+
+// MockBalanceRepositoryMockRecorder is the mock recorder for MockBalanceRepository.
+type MockBalanceRepositoryMockRecorder struct {
+        mock *MockBalanceRepository
+}
+
+// NewMockBalanceRepository creates a new mock instance.
+func NewMockBalanceRepository(ctrl *gomock.Controller) *MockBalanceRepository <span class="cov0" title="0">{
+        mock := &amp;MockBalanceRepository{ctrl: ctrl}
+        mock.recorder = &amp;MockBalanceRepositoryMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBalanceRepository) EXPECT() *MockBalanceRepositoryMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Account mocks base method.
+func (m *MockBalanceRepository) Account(ctx context.Context, userID uuid.UUID) (models.Account, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Account", ctx, userID)
+        ret0, _ := ret[0].(models.Account)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Account indicates an expected call of Account.
+func (mr *MockBalanceRepositoryMockRecorder) Account(ctx, userID interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Account", reflect.TypeOf((*MockBalanceRepository)(nil).Account), ctx, userID)
+}</span> </pre>
+		
+		<pre class="file" id="file15" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/login.go
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockLoginChecker is a mock of LoginChecker interface.
+type MockLoginChecker struct {
+        ctrl     *gomock.Controller
+        recorder *MockLoginCheckerMockRecorder
+}
+
+// MockLoginCheckerMockRecorder is the mock recorder for MockLoginChecker.
+type MockLoginCheckerMockRecorder struct {
+        mock *MockLoginChecker
+}
+
+// NewMockLoginChecker creates a new mock instance.
+func NewMockLoginChecker(ctrl *gomock.Controller) *MockLoginChecker <span class="cov0" title="0">{
+        mock := &amp;MockLoginChecker{ctrl: ctrl}
+        mock.recorder = &amp;MockLoginCheckerMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockLoginChecker) EXPECT() *MockLoginCheckerMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// CheckLogin mocks base method.
+func (m *MockLoginChecker) CheckLogin(ctx context.Context, login, passwordHash string) (uuid.UUID, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "CheckLogin", ctx, login, passwordHash)
+        ret0, _ := ret[0].(uuid.UUID)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// CheckLogin indicates an expected call of CheckLogin.
+func (mr *MockLoginCheckerMockRecorder) CheckLogin(ctx, login, passwordHash interface{}) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckLogin", reflect.TypeOf((*MockLoginChecker)(nil).CheckLogin), ctx, login, passwordHash)
+}</span> </pre>
+		
+		<pre class="file" id="file16" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/register_order.go
+//
+// Generated by this command:
+//
+//        mockgen -source=internal/handler/register_order.go -destination=internal/handler/mocks/order_registrar.go -package=mocks
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        constants "github.com/iubondar/gophermart/internal/constants"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockOrderRegistrar is a mock of OrderRegistrar interface.
+type MockOrderRegistrar struct {
+        ctrl     *gomock.Controller
+        recorder *MockOrderRegistrarMockRecorder
+        isgomock struct{}
+}
+
+// MockOrderRegistrarMockRecorder is the mock recorder for MockOrderRegistrar.
+type MockOrderRegistrarMockRecorder struct {
+        mock *MockOrderRegistrar
+}
+
+// NewMockOrderRegistrar creates a new mock instance.
+func NewMockOrderRegistrar(ctrl *gomock.Controller) *MockOrderRegistrar <span class="cov0" title="0">{
+        mock := &amp;MockOrderRegistrar{ctrl: ctrl}
+        mock.recorder = &amp;MockOrderRegistrarMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrderRegistrar) EXPECT() *MockOrderRegistrarMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// RegisterOrder mocks base method.
+func (m *MockOrderRegistrar) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumber string) (constants.OrderRegistrationResult, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "RegisterOrder", ctx, userID, orderNumber)
+        ret0, _ := ret[0].(constants.OrderRegistrationResult)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// RegisterOrder indicates an expected call of RegisterOrder.
+func (mr *MockOrderRegistrarMockRecorder) RegisterOrder(ctx, userID, orderNumber any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterOrder", reflect.TypeOf((*MockOrderRegistrar)(nil).RegisterOrder), ctx, userID, orderNumber)
+}</span>
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: order_status_fetcher.go
+//
+// Generated by this command:
+//
+//        mockgen -source=order_status_fetcher.go -destination=./mock_order_status_fetcher.go -package=mocks
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        models "github.com/iubondar/gophermart/internal/models"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockOrderStatusFetcher is a mock of OrderStatusFetcher interface.
+type MockOrderStatusFetcher struct {
+        ctrl     *gomock.Controller
+        recorder *MockOrderStatusFetcherMockRecorder
+        isgomock struct{}
+}
+
+// MockOrderStatusFetcherMockRecorder is the mock recorder for MockOrderStatusFetcher.
+type MockOrderStatusFetcherMockRecorder struct {
+        mock *MockOrderStatusFetcher
+}
+
+// NewMockOrderStatusFetcher creates a new mock instance.
+func NewMockOrderStatusFetcher(ctrl *gomock.Controller) *MockOrderStatusFetcher <span class="cov0" title="0">{
+        mock := &amp;MockOrderStatusFetcher{ctrl: ctrl}
+        mock.recorder = &amp;MockOrderStatusFetcherMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrderStatusFetcher) EXPECT() *MockOrderStatusFetcherMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// FetchOrderStatus mocks base method.
+func (m *MockOrderStatusFetcher) FetchOrderStatus(ctx context.Context, order models.Order) (models.OrderStatus, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "FetchOrderStatus", ctx, order)
+        ret0, _ := ret[0].(models.OrderStatus)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// FetchOrderStatus indicates an expected call of FetchOrderStatus.
+func (mr *MockOrderStatusFetcherMockRecorder) FetchOrderStatus(ctx, order any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchOrderStatus", reflect.TypeOf((*MockOrderStatusFetcher)(nil).FetchOrderStatus), ctx, order)
+}</span>
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: orders_repository.go
+//
+// Generated by this command:
+//
+//        mockgen -source=orders_repository.go -destination=./mock_orders_repository.go -package=mocks
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        models "github.com/iubondar/gophermart/internal/models"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockOrdersRepository is a mock of OrdersRepository interface.
+type MockOrdersRepository struct {
+        ctrl     *gomock.Controller
+        recorder *MockOrdersRepositoryMockRecorder
+        isgomock struct{}
+}
+
+// MockOrdersRepositoryMockRecorder is the mock recorder for MockOrdersRepository.
+type MockOrdersRepositoryMockRecorder struct {
+        mock *MockOrdersRepository
+}
+
+// NewMockOrdersRepository creates a new mock instance.
+func NewMockOrdersRepository(ctrl *gomock.Controller) *MockOrdersRepository <span class="cov0" title="0">{
+        mock := &amp;MockOrdersRepository{ctrl: ctrl}
+        mock.recorder = &amp;MockOrdersRepositoryMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrdersRepository) EXPECT() *MockOrdersRepositoryMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Orders mocks base method.
+func (m *MockOrdersRepository) Orders(ctx context.Context, userID uuid.UUID) ([]models.Order, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Orders", ctx, userID)
+        ret0, _ := ret[0].([]models.Order)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Orders indicates an expected call of Orders.
+func (mr *MockOrdersRepositoryMockRecorder) Orders(ctx, userID any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Orders", reflect.TypeOf((*MockOrdersRepository)(nil).Orders), ctx, userID)
+}</span>
+
+// OrdersToUpdate mocks base method.
+func (m *MockOrdersRepository) OrdersToUpdate(ctx context.Context, limit int) ([]models.Order, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "OrdersToUpdate", ctx, limit)
+        ret0, _ := ret[0].([]models.Order)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// OrdersToUpdate indicates an expected call of OrdersToUpdate.
+func (mr *MockOrdersRepositoryMockRecorder) OrdersToUpdate(ctx, limit any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OrdersToUpdate", reflect.TypeOf((*MockOrdersRepository)(nil).OrdersToUpdate), ctx, limit)
+}</span>
+
+// UpdateOrders mocks base method.
+func (m *MockOrdersRepository) UpdateOrders(ctx context.Context, orders []models.OrderStatus) error <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "UpdateOrders", ctx, orders)
+        ret0, _ := ret[0].(error)
+        return ret0
+}</span>
+
+// UpdateOrders indicates an expected call of UpdateOrders.
+func (mr *MockOrdersRepositoryMockRecorder) UpdateOrders(ctx, orders any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOrders", reflect.TypeOf((*MockOrdersRepository)(nil).UpdateOrders), ctx, orders)
+}</span>
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/register.go
+//
+// Generated by this command:
+//
+//        mockgen -source=internal/handler/register.go -destination=internal/handler/mocks/mock_user_registrar.go -package=mocks UserRegistrar
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockUserRegistrar is a mock of UserRegistrar interface.
+type MockUserRegistrar struct {
+        ctrl     *gomock.Controller
+        recorder *MockUserRegistrarMockRecorder
+        isgomock struct{}
+}
+
+// MockUserRegistrarMockRecorder is the mock recorder for MockUserRegistrar.
+type MockUserRegistrarMockRecorder struct {
+        mock *MockUserRegistrar
+}
+
+// NewMockUserRegistrar creates a new mock instance.
+func NewMockUserRegistrar(ctrl *gomock.Controller) *MockUserRegistrar <span class="cov0" title="0">{
+        mock := &amp;MockUserRegistrar{ctrl: ctrl}
+        mock.recorder = &amp;MockUserRegistrarMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUserRegistrar) EXPECT() *MockUserRegistrarMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Register mocks base method.
+func (m *MockUserRegistrar) Register(ctx context.Context, userID uuid.UUID, login, passwordHash string) (bool, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Register", ctx, userID, login, passwordHash)
+        ret0, _ := ret[0].(bool)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Register indicates an expected call of Register.
+func (mr *MockUserRegistrarMockRecorder) Register(ctx, userID, login, passwordHash any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockUserRegistrar)(nil).Register), ctx, userID, login, passwordHash)
+}</span>
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/withdrawals.go
+//
+// Generated by this command:
+//
+//        mockgen -source=internal/handler/withdrawals.go -destination=internal/handler/mocks/mock_withdrawals_repository.go -package=mocks WithdrawalsRepository
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        models "github.com/iubondar/gophermart/internal/models"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockWithdrawalsRepository is a mock of WithdrawalsRepository interface.
+type MockWithdrawalsRepository struct {
+        ctrl     *gomock.Controller
+        recorder *MockWithdrawalsRepositoryMockRecorder
+        isgomock struct{}
+}
+
+// MockWithdrawalsRepositoryMockRecorder is the mock recorder for MockWithdrawalsRepository.
+type MockWithdrawalsRepositoryMockRecorder struct {
+        mock *MockWithdrawalsRepository
+}
+
+// NewMockWithdrawalsRepository creates a new mock instance.
+func NewMockWithdrawalsRepository(ctrl *gomock.Controller) *MockWithdrawalsRepository <span class="cov0" title="0">{
+        mock := &amp;MockWithdrawalsRepository{ctrl: ctrl}
+        mock.recorder = &amp;MockWithdrawalsRepositoryMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockWithdrawalsRepository) EXPECT() *MockWithdrawalsRepositoryMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Withdrawals mocks base method.
+func (m *MockWithdrawalsRepository) Withdrawals(ctx context.Context, userID uuid.UUID) ([]models.Withdrawal, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Withdrawals", ctx, userID)
+        ret0, _ := ret[0].([]models.Withdrawal)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Withdrawals indicates an expected call of Withdrawals.
+func (mr *MockWithdrawalsRepositoryMockRecorder) Withdrawals(ctx, userID any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Withdrawals", reflect.TypeOf((*MockWithdrawalsRepository)(nil).Withdrawals), ctx, userID)
+}</span>
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">// Code generated by MockGen. DO NOT EDIT.
+// Source: internal/handler/withdraw.go
+//
+// Generated by this command:
+//
+//        mockgen -source=internal/handler/withdraw.go -destination=internal/handler/mocks/mock_withdrawer.go -package=mocks Withdrawer
+//
+
+// Package mocks is a generated GoMock package.
+package mocks
+
+import (
+        context "context"
+        reflect "reflect"
+
+        uuid "github.com/google/uuid"
+        constants "github.com/iubondar/gophermart/internal/constants"
+        gomock "go.uber.org/mock/gomock"
+)
+
+// MockWithdrawer is a mock of Withdrawer interface.
+type MockWithdrawer struct {
+        ctrl     *gomock.Controller
+        recorder *MockWithdrawerMockRecorder
+        isgomock struct{}
+}
+
+// MockWithdrawerMockRecorder is the mock recorder for MockWithdrawer.
+type MockWithdrawerMockRecorder struct {
+        mock *MockWithdrawer
+}
+
+// NewMockWithdrawer creates a new mock instance.
+func NewMockWithdrawer(ctrl *gomock.Controller) *MockWithdrawer <span class="cov0" title="0">{
+        mock := &amp;MockWithdrawer{ctrl: ctrl}
+        mock.recorder = &amp;MockWithdrawerMockRecorder{mock}
+        return mock
+}</span>
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockWithdrawer) EXPECT() *MockWithdrawerMockRecorder <span class="cov0" title="0">{
+        return m.recorder
+}</span>
+
+// Withdraw mocks base method.
+func (m *MockWithdrawer) Withdraw(ctx context.Context, userID uuid.UUID, orderNumber string, sum float32) (constants.WithdrawResult, error) <span class="cov0" title="0">{
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "Withdraw", ctx, userID, orderNumber, sum)
+        ret0, _ := ret[0].(constants.WithdrawResult)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}</span>
+
+// Withdraw indicates an expected call of Withdraw.
+func (mr *MockWithdrawerMockRecorder) Withdraw(ctx, userID, orderNumber, sum any) *gomock.Call <span class="cov0" title="0">{
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Withdraw", reflect.TypeOf((*MockWithdrawer)(nil).Withdraw), ctx, userID, orderNumber, sum)
+}</span>
+</pre>
+		
+		<pre class="file" id="file22" style="display: none">package router
+
+import (
+        "github.com/go-chi/chi"
+        "github.com/iubondar/gophermart/internal/compress"
+        "github.com/iubondar/gophermart/internal/handler"
+        "github.com/iubondar/gophermart/internal/logging"
+        "github.com/iubondar/gophermart/internal/storage"
+)
+
+func NewRouter(storage *storage.Storage) (chi.Router, error) <span class="cov0" title="0">{
+        registerHandler := handler.NewRegisterHandler(storage)
+        loginHandler := handler.NewLoginHandler(storage)
+        registerOrderHandler := handler.NewRegisterOrderHandler(storage)
+        ordersHandler := handler.NewOrdersHandler(storage)
+        withdrawalsHandler := handler.NewWithdrawalsHandler(storage)
+        withdrawHandler := handler.NewWithdrawHandler(storage)
+        balanceHandler := handler.NewBalanceHandler(storage)
+
+        router := chi.NewRouter()
+        router.Use(logging.WithLogging, compress.WithGzipCompression)
+
+        router.Post("/api/user/register", registerHandler.Register)
+        router.Post("/api/user/login", loginHandler.Login)
+
+        router.Route("/api/user", func(r chi.Router) </span><span class="cov0" title="0">{
+                r.Post("/orders", registerOrderHandler.RegisterOrder)
+                r.Get("/orders", ordersHandler.Orders)
+
+                r.Get("/balance", balanceHandler.Balance)
+                r.Post("/balance/withdraw", withdrawHandler.Withdraw)
+
+                r.Get("/withdrawals", withdrawalsHandler.Withdrawals)
+        }</span>)
+
+        <span class="cov0" title="0">return router, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file23" style="display: none">package server
+
+import (
+        "context"
+        "net/http"
+        "os"
+        "os/signal"
+        "syscall"
+        "time"
+
+        "go.uber.org/zap"
+)
+
+type Server struct {
+        httpServer *http.Server
+}
+
+func New(addr string, handler http.Handler) *Server <span class="cov8" title="1">{
+        return &amp;Server{
+                httpServer: &amp;http.Server{
+                        Addr:    addr,
+                        Handler: handler,
+                },
+        }
+}</span>
+
+// Start запускает сервер и начинает обработку запросов
+func (s *Server) Start() error <span class="cov8" title="1">{
+        // Канал для обработки ошибок сервера
+        serverErrors := make(chan error, 1)
+
+        // Запускаем сервер в отдельной горутине
+        go func() </span><span class="cov8" title="1">{
+                zap.L().Info("Starting server", zap.String("address", s.httpServer.Addr))
+                serverErrors &lt;- s.httpServer.ListenAndServe()
+        }</span>()
+
+        // Канал для обработки сигналов завершения от ОС
+        <span class="cov8" title="1">shutdown := make(chan os.Signal, 1)
+        // Регистрируем обработчики для SIGINT (Ctrl+C) и SIGTERM
+        signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+
+        // Ожидаем либо ошибку сервера, либо сигнал завершения
+        select </span>{
+        case err := &lt;-serverErrors:<span class="cov8" title="1">
+                zap.L().Error("Server error", zap.Error(err))
+                return err</span>
+
+        case sig := &lt;-shutdown:<span class="cov0" title="0">
+                zap.L().Info("Start shutdown", zap.String("signal", sig.String()))
+                return s.Shutdown()</span>
+        }
+}
+
+// Shutdown выполняет graceful shutdown сервера
+func (s *Server) Shutdown() error <span class="cov8" title="1">{
+        // Устанавливаем таймаут 5 секунд для завершения текущих запросов
+        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+        defer cancel()
+
+        // Пытаемся корректно завершить работу сервера
+        if err := s.httpServer.Shutdown(ctx); err != nil </span><span class="cov0" title="0">{
+                zap.L().Error("Graceful shutdown did not complete", zap.Error(err))
+                // Если плавное завершение не удалось, принудительно закрываем сервер
+                if err := s.httpServer.Close(); err != nil </span><span class="cov0" title="0">{
+                        zap.L().Error("Could not stop server", zap.Error(err))
+                        return err
+                }</span>
+                <span class="cov0" title="0">return err</span>
+        }
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file24" style="display: none">package service
+
+import (
+        "context"
+        "sync"
+        "time"
+
+        "github.com/iubondar/gophermart/internal/models"
+        "go.uber.org/zap"
+)
+
+type OrderStatusFetcher interface {
+        FetchOrderStatus(ctx context.Context, order models.Order) (out models.OrderStatus, err error)
+}
+
+type OrdersRepository interface {
+        OrdersToUpdate(ctx context.Context, limit int) (orders []models.Order, err error)
+        UpdateOrders(ctx context.Context, orders []models.OrderStatus) error
+}
+
+type Result struct {
+        Status models.OrderStatus
+        Err    error
+}
+
+type PollingService struct {
+        interval    time.Duration
+        concurrency int
+        fetcher     OrderStatusFetcher
+        repo        OrdersRepository
+        done        chan struct{}
+        wg          sync.WaitGroup
+        ctx         context.Context
+        cancel      context.CancelFunc
+}
+
+func NewPollingService(
+        interval time.Duration,
+        concurrency int,
+        fetcher OrderStatusFetcher,
+        repo OrdersRepository,
+) *PollingService <span class="cov8" title="1">{
+        ctx, cancel := context.WithCancel(context.Background())
+        return &amp;PollingService{
+                interval:    interval,
+                concurrency: concurrency,
+                fetcher:     fetcher,
+                repo:        repo,
+                done:        make(chan struct{}),
+                ctx:         ctx,
+                cancel:      cancel,
+        }
+}</span>
+
+func (ps *PollingService) Start() <span class="cov8" title="1">{
+        ticker := time.NewTicker(ps.interval)
+
+        go func() </span><span class="cov8" title="1">{
+                for </span><span class="cov8" title="1">{
+                        select </span>{
+                        case &lt;-ticker.C:<span class="cov8" title="1">
+                                ps.runPollingCycle()</span>
+                        case &lt;-ps.done:<span class="cov8" title="1">
+                                ticker.Stop()
+                                return</span>
+                        }
+                }
+        }()
+}
+
+func (ps *PollingService) Stop() <span class="cov8" title="1">{
+        close(ps.done)
+        ps.cancel()
+        ps.wg.Wait()
+}</span>
+
+func (ps *PollingService) runPollingCycle() <span class="cov8" title="1">{
+        // извлекаем из репозитория номера заказов для обновления
+        orders, err := ps.repo.OrdersToUpdate(ps.ctx, ps.concurrency)
+        if err != nil </span><span class="cov0" title="0">{
+                zap.L().Sugar().Debugln("Error fetching orders to update status, error: ", err.Error())
+                return
+        }</span>
+
+        // Создаём input и output каналы
+        <span class="cov8" title="1">ordersCh := make(chan models.Order, len(orders))
+        resultCh := make(chan Result, len(orders))
+
+        // Заполняем input канал заказами для обновления статуса
+        go func() </span><span class="cov8" title="1">{
+                defer close(ordersCh)
+                for _, order := range orders </span><span class="cov8" title="1">{
+                        ordersCh &lt;- order
+                }</span>
+        }()
+
+        // Fan-out: запускаем воркеры
+        <span class="cov8" title="1">ps.wg.Add(ps.concurrency)
+        for range ps.concurrency </span><span class="cov8" title="1">{
+                go ps.worker(ordersCh, resultCh)
+        }</span>
+
+        // Fan-in: собираем все результаты
+        <span class="cov8" title="1">go func() </span><span class="cov8" title="1">{
+                ps.wg.Wait()    // ждём завершения всех воркеров
+                close(resultCh) // закрываем канал
+
+                // Обрабатываем все результаты после завершения
+                var orderStatuses []models.OrderStatus
+                for result := range resultCh </span><span class="cov8" title="1">{
+                        if result.Err != nil </span><span class="cov8" title="1">{
+                                zap.L().Sugar().Debugln("Got error from worker: ", result.Err.Error())
+                                // Even if there's an error, we still want to include the status in the update
+                                orderStatuses = append(orderStatuses, result.Status)
+                        }</span> else<span class="cov8" title="1"> {
+                                orderStatuses = append(orderStatuses, result.Status)
+                        }</span>
+                }
+
+                // Always call UpdateOrders, even if there are no statuses to update
+                <span class="cov8" title="1">err = ps.repo.UpdateOrders(ps.ctx, orderStatuses)
+                if err != nil </span><span class="cov8" title="1">{
+                        zap.L().Sugar().Debugln("Error updating order statuses, error: ", err.Error())
+                        return
+                }</span>
+        }()
+}
+
+func (ps *PollingService) worker(ordersCh &lt;-chan models.Order, resultsCh chan&lt;- Result) <span class="cov8" title="1">{
+        defer ps.wg.Done()
+
+        for order := range ordersCh </span><span class="cov8" title="1">{
+                status, err := ps.fetcher.FetchOrderStatus(ps.ctx, order)
+                resultsCh &lt;- Result{Status: status, Err: err}
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file25" style="display: none">package storage
+
+import (
+        "context"
+        "database/sql"
+        "embed"
+        "errors"
+        "fmt"
+
+        "github.com/google/uuid"
+        "github.com/iubondar/gophermart/internal/constants"
+        "github.com/iubondar/gophermart/internal/models"
+        "github.com/iubondar/gophermart/internal/storage/queries"
+        "github.com/iubondar/gophermart/internal/validator"
+        "github.com/jackc/pgerrcode"
+        "github.com/jackc/pgx/v5/pgconn"
+        _ "github.com/jackc/pgx/v5/stdlib"
+        "github.com/pressly/goose/v3"
+        "go.uber.org/zap"
+        "golang.org/x/crypto/bcrypt"
+)
+
+//go:embed migrations/*.sql
+var embedMigrations embed.FS
+
+type Storage struct {
+        db *sql.DB
+}
+
+func NewStorage(dsn string) (storage *Storage, err error) <span class="cov8" title="1">{
+        db, err := sql.Open("pgx", dsn)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">goose.SetBaseFS(embedMigrations)
+
+        if err := goose.SetDialect("postgres"); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">if err := goose.Up(db, "migrations"); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return &amp;Storage{
+                db: db,
+        }, nil</span>
+}
+
+func (s *Storage) Register(ctx context.Context, userID uuid.UUID, login string, passwordHash string) (ok bool, err error) <span class="cov8" title="1">{
+        _, err = s.db.ExecContext(ctx, queries.InsertUser, userID, login, passwordHash)
+        if err != nil </span><span class="cov8" title="1">{
+                // Если пользователь с логином уже существует - возвращаем не ок
+                var pgErr *pgconn.PgError
+                if errors.As(err, &amp;pgErr) &amp;&amp; pgErr.Code == pgerrcode.UniqueViolation </span><span class="cov8" title="1">{
+                        return false, nil
+                }</span>
+
+                // Другая ошибка
+                <span class="cov0" title="0">zap.L().Sugar().Debugln("Error insert new user:", err.Error())
+                return false, err</span>
+        }
+
+        <span class="cov8" title="1">return true, nil</span>
+}
+
+func (s *Storage) CheckLogin(ctx context.Context, login string, password string) (userID uuid.UUID, err error) <span class="cov8" title="1">{
+        row := s.db.QueryRowContext(ctx, queries.GetUserID, login)
+
+        var hashedPassword string
+        err = row.Scan(&amp;userID, &amp;hashedPassword)
+
+        if errors.Is(err, sql.ErrNoRows) </span><span class="cov8" title="1">{
+                return uuid.Nil, nil
+        }</span>
+        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                return uuid.Nil, err
+        }</span>
+
+        <span class="cov8" title="1">err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+        if err != nil </span><span class="cov8" title="1">{
+                return uuid.Nil, nil
+        }</span>
+
+        <span class="cov8" title="1">return userID, nil</span>
+}
+
+func (s *Storage) RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumber string) (result constants.OrderRegistrationResult, err error) <span class="cov8" title="1">{
+        // Валидируем номер заказа алгоритмом Луна
+        isValid := validator.ValidateLuhn(orderNumber)
+        if !isValid </span><span class="cov8" title="1">{
+                return constants.WrongOrderNumberFormat, nil
+        }</span>
+
+        // Ищем заказ по номеру
+        <span class="cov8" title="1">var orderUserID uuid.UUID
+        row := s.db.QueryRowContext(ctx, queries.GetUserIDByOrderNum, orderNumber)
+        err = row.Scan(&amp;orderUserID)
+        if errors.Is(err, sql.ErrNoRows) </span><span class="cov8" title="1">{
+                // Не нашли  - сохраняем заказ в БД с начальным статусом
+                _, err = s.db.ExecContext(ctx, queries.RegisterOrder, userID, orderNumber, constants.OrderStatusNew)
+                if err != nil </span><span class="cov0" title="0">{
+                        zap.L().Sugar().Debugln("Error insert new order:", err.Error())
+                        return 0, err
+                }</span>
+                <span class="cov8" title="1">return constants.AcceptedToProcessing, nil</span>
+        } else<span class="cov8" title="1"> if err != nil </span><span class="cov0" title="0">{
+                // Другая ошибка - возвращаем ошибку
+                zap.L().Sugar().Debugln("Error query order by num:", err.Error())
+                return 0, err
+        }</span> else<span class="cov8" title="1"> {
+                // Нашли - сверяем userID и возвращаем нужный результат
+                if userID == orderUserID </span><span class="cov8" title="1">{
+                        return constants.AlreadyRegistered, nil
+                }</span> else<span class="cov0" title="0"> {
+                        return constants.RegisteredByAnotherUser, nil
+                }</span>
+        }
+}
+
+func (s *Storage) Orders(ctx context.Context, userID uuid.UUID) (orders []models.Order, err error) <span class="cov8" title="1">{
+        rows, err := s.db.QueryContext(ctx, queries.Orders, userID)
+        if err != nil </span><span class="cov0" title="0">{
+                if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
+                        return []models.Order{}, nil
+                }</span> else<span class="cov0" title="0"> {
+                        return nil, err
+                }</span>
+        }
+
+        <span class="cov8" title="1">defer rows.Close()
+
+        for rows.Next() </span><span class="cov8" title="1">{
+                var order models.Order
+                err = rows.Scan(&amp;order.Number, &amp;order.Status, &amp;order.Accrual, &amp;order.UploadedAt)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">orders = append(orders, order)</span>
+        }
+
+        <span class="cov8" title="1">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("error processing rows: %s", err.Error())
+        }</span>
+
+        <span class="cov8" title="1">return orders, nil</span>
+}
+
+func (s *Storage) OrdersToUpdate(ctx context.Context, limit int) (orders []models.Order, err error) <span class="cov8" title="1">{
+        rows, err := s.db.QueryContext(ctx, queries.OrdersToUpdate, limit)
+        if err != nil </span><span class="cov0" title="0">{
+                if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
+                        return orders, nil
+                }</span> else<span class="cov0" title="0"> {
+                        return nil, err
+                }</span>
+        }
+
+        <span class="cov8" title="1">defer rows.Close()
+
+        for rows.Next() </span><span class="cov8" title="1">{
+                var order models.Order
+                err = rows.Scan(&amp;order.UserID, &amp;order.Number, &amp;order.Status, &amp;order.Accrual, &amp;order.UploadedAt)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">orders = append(orders, order)</span>
+        }
+
+        <span class="cov8" title="1">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("error processing rows: %s", err.Error())
+        }</span>
+
+        <span class="cov8" title="1">return orders, nil</span>
+}
+
+func (s *Storage) UpdateOrders(ctx context.Context, orders []models.OrderStatus) error <span class="cov8" title="1">{
+        tx, err := s.db.Begin()
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        // если Commit будет раньше, то откат проигнорируется
+        <span class="cov8" title="1">defer tx.Rollback()
+
+        updateStmt, err := tx.PrepareContext(ctx, queries.UpdateOrder)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer updateStmt.Close()
+
+        addStmt, err := tx.PrepareContext(ctx, queries.AddBalance)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer addStmt.Close()
+
+        for _, order := range orders </span><span class="cov8" title="1">{
+                // обновляем статус заказа
+                _, err = updateStmt.ExecContext(ctx, order.Status, order.Accrual, order.Number)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                // добавляем баланс пользователю, если заказ обработан
+                <span class="cov8" title="1">if order.Status == constants.OrderStatusProcessed </span><span class="cov8" title="1">{
+                        _, err = addStmt.ExecContext(ctx, order.Accrual, order.UserID)
+                        if err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+                }
+        }
+
+        <span class="cov8" title="1">return tx.Commit()</span>
+}
+
+func (s *Storage) Withdrawals(ctx context.Context, userID uuid.UUID) (withdrawals []models.Withdrawal, err error) <span class="cov8" title="1">{
+        rows, err := s.db.QueryContext(ctx, queries.Withdrawals, userID)
+        if err != nil </span><span class="cov0" title="0">{
+                if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
+                        return []models.Withdrawal{}, nil
+                }</span> else<span class="cov0" title="0"> {
+                        return nil, err
+                }</span>
+        }
+
+        <span class="cov8" title="1">defer rows.Close()
+
+        for rows.Next() </span><span class="cov8" title="1">{
+                var withdrawal models.Withdrawal
+                err = rows.Scan(&amp;withdrawal.Number, &amp;withdrawal.Sum, &amp;withdrawal.ProcessedAt)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">withdrawals = append(withdrawals, withdrawal)</span>
+        }
+
+        <span class="cov8" title="1">if err := rows.Err(); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("error processing rows: %s", err.Error())
+        }</span>
+
+        <span class="cov8" title="1">return withdrawals, nil</span>
+}
+
+func (s *Storage) Withdraw(ctx context.Context, userID uuid.UUID, orderNumber string, sum float32) (result constants.WithdrawResult, err error) <span class="cov8" title="1">{
+        // Валидируем номер заказа алгоритмом Луна
+        isValid := validator.ValidateLuhn(orderNumber)
+        if !isValid </span><span class="cov8" title="1">{
+                return constants.WrongOrderFormat, nil
+        }</span>
+
+        // Проверяем баланс пользователя
+        <span class="cov8" title="1">row := s.db.QueryRowContext(ctx, queries.GetBalance, userID)
+
+        var balance float32
+        err = row.Scan(&amp;balance)
+        if err != nil </span><span class="cov0" title="0">{
+                if errors.Is(err, sql.ErrNoRows) </span><span class="cov0" title="0">{
+                        return 0, fmt.Errorf("cannot find record for userID: %s", userID.String())
+                }</span> else<span class="cov0" title="0"> {
+                        return 0, err
+                }</span>
+        }
+        <span class="cov8" title="1">if balance &lt; sum </span><span class="cov8" title="1">{
+                return constants.InsufficientFunds, nil
+        }</span>
+
+        // Уменьшаем баланс на полученную сумму и делаем запись о списании в одной транзакции
+        <span class="cov8" title="1">tx, err := s.db.Begin()
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">defer tx.Rollback()
+
+        withdrawFromBalanceStmt, err := tx.PrepareContext(ctx, queries.WithdrawFromBalance)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">defer withdrawFromBalanceStmt.Close()
+
+        addWithdrawStmt, err := tx.PrepareContext(ctx, queries.AddWithdraw)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+        <span class="cov8" title="1">defer addWithdrawStmt.Close()
+
+        _, err = withdrawFromBalanceStmt.ExecContext(ctx, sum, userID)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+
+        <span class="cov8" title="1">_, err = addWithdrawStmt.ExecContext(ctx, userID, orderNumber, sum)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+
+        <span class="cov8" title="1">return constants.Success, tx.Commit()</span>
+}
+
+func (s *Storage) Account(ctx context.Context, userID uuid.UUID) (account models.Account, err error) <span class="cov8" title="1">{
+        // Баланс пользователя
+        row := s.db.QueryRowContext(ctx, queries.GetBalance, userID)
+
+        var balance float32
+        err = row.Scan(&amp;balance)
+        if err != nil </span><span class="cov8" title="1">{
+                if errors.Is(err, sql.ErrNoRows) </span><span class="cov8" title="1">{
+                        return models.Account{}, fmt.Errorf("cannot find record for userID: %s", userID.String())
+                }</span> else<span class="cov0" title="0"> {
+                        return models.Account{}, err
+                }</span>
+        }
+
+        // Сумма вывода
+        <span class="cov8" title="1">row = s.db.QueryRowContext(ctx, queries.WithdrawalSum, userID)
+
+        var withdrawalSum float32
+        err = row.Scan(&amp;withdrawalSum)
+        if err != nil </span><span class="cov0" title="0">{
+                return models.Account{}, err
+        }</span>
+
+        <span class="cov8" title="1">return models.Account{
+                Balance:       balance,
+                WithdrawalSum: withdrawalSum,
+        }, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file26" style="display: none">package testhelpers
+
+import (
+        "context"
+        "time"
+
+        "github.com/testcontainers/testcontainers-go"
+        "github.com/testcontainers/testcontainers-go/modules/postgres"
+        "github.com/testcontainers/testcontainers-go/wait"
+)
+
+type PostgresContainer struct {
+        *postgres.PostgresContainer
+        ConnectionString string
+}
+
+func CreatePostgresContainer(ctx context.Context) (*PostgresContainer, error) <span class="cov0" title="0">{
+        pgContainer, err := postgres.Run(ctx,
+                "postgres:15.3-alpine",
+                postgres.WithDatabase("test-db"),
+                postgres.WithUsername("postgres"),
+                postgres.WithPassword("postgres"),
+                testcontainers.WithWaitStrategy(
+                        wait.ForLog("database system is ready to accept connections").
+                                WithOccurrence(2).WithStartupTimeout(5*time.Second)),
+        )
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">connStr, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return &amp;PostgresContainer{
+                PostgresContainer: pgContainer,
+                ConnectionString:  connStr,
+        }, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file27" style="display: none">package testhelpers
+
+import "errors"
+
+// ErrorReader implements io.Reader and always returns an error.
+// Useful for testing error handling in functions that read from io.Reader.
+type ErrorReader struct{}
+
+func (er *ErrorReader) Read(p []byte) (n int, err error) <span class="cov0" title="0">{
+        return 0, errors.New("read error")
+}</span>
+</pre>
+		
+		<pre class="file" id="file28" style="display: none">package validator
+
+import (
+        "unicode"
+)
+
+// ValidateLuhn проверяет, соответствует ли строка алгоритму Луна
+// https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%9B%D1%83%D0%BD%D0%B0
+func ValidateLuhn(input string) bool <span class="cov8" title="1">{
+        // Проверяем, что строка состоит только из цифр и не пуста
+        if len(input) == 0 </span><span class="cov8" title="1">{
+                return false
+        }</span>
+
+        <span class="cov8" title="1">for _, r := range input </span><span class="cov8" title="1">{
+                if !unicode.IsDigit(r) </span><span class="cov8" title="1">{
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if len(input) == 1 </span><span class="cov8" title="1">{
+                // Однозначные числа считаются валидными только если они равны 0
+                return input[0] == '0'
+        }</span>
+
+        <span class="cov8" title="1">sum := 0
+        isSecond := false // Флаг для обработки каждой второй цифры
+
+        // Итерируемся по строке справа налево
+        for i := len(input) - 1; i &gt;= 0; i-- </span><span class="cov8" title="1">{
+                // Вычитая код символа '0' из кода текущего символа, мы получаем числовое значение цифры.
+                digit := int(input[i] - '0')
+
+                if isSecond </span><span class="cov8" title="1">{
+                        digit *= 2
+                        if digit &gt; 9 </span><span class="cov8" title="1">{
+                                digit = (digit / 10) + (digit % 10)
+                        }</span>
+                }
+
+                <span class="cov8" title="1">sum += digit
+                isSecond = !isSecond</span>
+        }
+
+        <span class="cov8" title="1">return sum%10 == 0</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
