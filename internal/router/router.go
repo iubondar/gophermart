@@ -22,7 +22,8 @@ func NewRouter(storage *storage.Storage) (chi.Router, error) {
 	withdrawalsUsecase := usecase.NewWithdrawalsUsecase(storage)
 	withdrawalsHandler := handler.NewWithdrawalsHandler(withdrawalsUsecase)
 
-	withdrawHandler := handler.NewWithdrawHandler(storage)
+	withdrawUsecase := usecase.NewWithdrawUsecase(storage)
+	withdrawHandler := handler.NewWithdrawHandler(withdrawUsecase)
 
 	getBalanceUsecase := usecase.NewGetBalanceUsecase(storage)
 	balanceHandler := handler.NewBalanceHandler(getBalanceUsecase)

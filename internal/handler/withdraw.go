@@ -2,32 +2,22 @@ package handler
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
 	"github.com/iubondar/gophermart/internal/constants"
+	"github.com/iubondar/gophermart/internal/usecase"
 	"go.uber.org/zap"
 )
 
-type Withdrawer interface {
-	Withdraw(ctx context.Context, userID uuid.UUID, orderNumber string, sum float32) (result constants.WithdrawResult, err error)
-}
-
-type WithdrawIn struct {
-	Order string  `json:"order"`
-	Sum   float32 `json:"sum"`
-}
-
 type WithdrawHandler struct {
-	withdrawer Withdrawer
+	uc usecase.WithdrawUsecase
 }
 
-func NewWithdrawHandler(withdrawer Withdrawer) *WithdrawHandler {
+func NewWithdrawHandler(uc usecase.WithdrawUsecase) *WithdrawHandler {
 	return &WithdrawHandler{
-		withdrawer: withdrawer,
+		uc: uc,
 	}
 }
 
@@ -43,7 +33,7 @@ func (handler WithdrawHandler) Withdraw(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	var in WithdrawIn
+	var in usecase.WithdrawIn
 	var buf bytes.Buffer
 	// читаем тело запроса
 	_, err = buf.ReadFrom(req.Body)
@@ -58,21 +48,10 @@ func (handler WithdrawHandler) Withdraw(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	// Validate input
-	if in.Order == "" {
-		http.Error(res, "Order number is required", http.StatusBadRequest)
-		return
-	}
-
-	if in.Sum <= 0 {
-		http.Error(res, "Sum must be greater than 0", http.StatusBadRequest)
-		return
-	}
-
-	result, err := handler.withdrawer.Withdraw(req.Context(), userID, in.Order, in.Sum)
+	result, err := handler.uc.Withdraw(req.Context(), userID, in)
 	if err != nil {
 		zap.L().Sugar().Debugln("Error withdrawing balance:", err.Error())
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+		http.Error(res, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
