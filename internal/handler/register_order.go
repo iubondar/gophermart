@@ -7,6 +7,7 @@ import (
 	"github.com/iubondar/gophermart/internal/auth"
 	"github.com/iubondar/gophermart/internal/constants"
 	"github.com/iubondar/gophermart/internal/usecase"
+	"go.uber.org/zap"
 )
 
 type RegisterOrderHandler struct {
@@ -39,6 +40,7 @@ func (handler RegisterOrderHandler) RegisterOrder(res http.ResponseWriter, req *
 
 	result, err := handler.uc.RegisterOrder(req.Context(), userID, string(body))
 	if err != nil {
+		zap.L().Sugar().Debugln("Failed to register order", zap.Error(err))
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}

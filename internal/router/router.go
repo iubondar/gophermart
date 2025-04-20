@@ -10,7 +10,8 @@ import (
 )
 
 func NewRouter(storage *storage.Storage) (chi.Router, error) {
-	registerHandler := handler.NewRegisterHandler(storage)
+	registerUsecase := usecase.NewRegisterUsecase(storage)
+	registerHandler := handler.NewRegisterHandler(registerUsecase)
 
 	loginUsecase := usecase.NewLoginUsecase(storage)
 	loginHandler := handler.NewLoginHandler(loginUsecase)

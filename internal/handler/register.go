@@ -2,31 +2,21 @@ package handler
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/iubondar/gophermart/internal/usecase"
+	"go.uber.org/zap"
 )
 
-type RegisterIn struct {
-	Login    string `json:"login"`
-	Password string `json:"password"`
-}
-
-type UserRegistrar interface {
-	Register(ctx context.Context, userID uuid.UUID, login string, passwordHash string) (ok bool, err error)
-}
-
 type RegisterHandler struct {
-	registrator UserRegistrar
+	uc usecase.RegisterUsecase
 }
 
-func NewRegisterHandler(registrator UserRegistrar) *RegisterHandler {
+func NewRegisterHandler(uc usecase.RegisterUsecase) *RegisterHandler {
 	return &RegisterHandler{
-		registrator: registrator,
+		uc: uc,
 	}
 }
 
@@ -36,7 +26,7 @@ func (handler RegisterHandler) Register(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	var in RegisterIn
+	var in usecase.RegisterIn
 	var buf bytes.Buffer
 	// читаем тело запроса
 	_, err := buf.ReadFrom(req.Body)
@@ -51,21 +41,10 @@ func (handler RegisterHandler) Register(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	if len(in.Login) < 1 || len(in.Password) < 1 {
-		http.Error(res, "Login or password is empty", http.StatusBadRequest)
-		return
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
+	userID, ok, err := handler.uc.Register(req.Context(), in)
 	if err != nil {
-		http.Error(res, "Error hashing password "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	userID := uuid.New()
-	ok, err := handler.registrator.Register(req.Context(), userID, in.Login, string(hashedPassword))
-	if err != nil {
-		http.Error(res, "Failed to register user", http.StatusBadRequest)
+		zap.L().Sugar().Debugln("Failed to register user", zap.Error(err))
+		http.Error(res, "Failed to register user", http.StatusInternalServerError)
 		return
 	}
 
