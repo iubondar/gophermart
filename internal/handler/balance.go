@@ -1,32 +1,21 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
-	"github.com/iubondar/gophermart/internal/models"
+	"github.com/iubondar/gophermart/internal/usecase"
 	"go.uber.org/zap"
 )
 
-type BalanceRepository interface {
-	Account(ctx context.Context, userID uuid.UUID) (account models.Account, err error)
-}
-
-type BalanceOut struct {
-	Current   float32 `json:"current"`
-	Withdrawn float32 `json:"withdrawn"`
-}
-
 type BalanceHandler struct {
-	repo BalanceRepository
+	uc usecase.GetBalanceUsecase
 }
 
-func NewBalanceHandler(repo BalanceRepository) BalanceHandler {
+func NewBalanceHandler(uc usecase.GetBalanceUsecase) BalanceHandler {
 	return BalanceHandler{
-		repo: repo,
+		uc: uc,
 	}
 }
 
@@ -42,20 +31,16 @@ func (handler BalanceHandler) Balance(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	account, err := handler.repo.Account(req.Context(), userID)
+	out, err := handler.uc.GetBalance(req.Context(), userID)
 	if err != nil {
-		zap.L().Sugar().Debugln("Error query account:", err.Error())
-		http.Error(res, err.Error(), http.StatusBadRequest)
+		zap.L().Sugar().Debugln("Error get balance:", err.Error())
+		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
-	}
-
-	out := BalanceOut{
-		Current:   account.Balance,
-		Withdrawn: account.WithdrawalSum,
 	}
 
 	resp, err := json.Marshal(out)
 	if err != nil {
+		zap.L().Sugar().Debugln("Error marshal balance:", err.Error())
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}

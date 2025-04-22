@@ -6,16 +6,29 @@ import (
 	"github.com/iubondar/gophermart/internal/handler"
 	"github.com/iubondar/gophermart/internal/logging"
 	"github.com/iubondar/gophermart/internal/storage"
+	"github.com/iubondar/gophermart/internal/usecase"
 )
 
 func NewRouter(storage *storage.Storage) (chi.Router, error) {
-	registerHandler := handler.NewRegisterHandler(storage)
-	loginHandler := handler.NewLoginHandler(storage)
+	registerUsecase := usecase.NewRegisterUsecase(storage)
+	registerHandler := handler.NewRegisterHandler(registerUsecase)
+
+	loginUsecase := usecase.NewLoginUsecase(storage)
+	loginHandler := handler.NewLoginHandler(loginUsecase)
+
 	registerOrderHandler := handler.NewRegisterOrderHandler(storage)
-	ordersHandler := handler.NewOrdersHandler(storage)
-	withdrawalsHandler := handler.NewWithdrawalsHandler(storage)
-	withdrawHandler := handler.NewWithdrawHandler(storage)
-	balanceHandler := handler.NewBalanceHandler(storage)
+
+	ordersUsecase := usecase.NewOrdersUsecase(storage)
+	ordersHandler := handler.NewOrdersHandler(ordersUsecase)
+
+	withdrawalsUsecase := usecase.NewWithdrawalsUsecase(storage)
+	withdrawalsHandler := handler.NewWithdrawalsHandler(withdrawalsUsecase)
+
+	withdrawUsecase := usecase.NewWithdrawUsecase(storage)
+	withdrawHandler := handler.NewWithdrawHandler(withdrawUsecase)
+
+	getBalanceUsecase := usecase.NewGetBalanceUsecase(storage)
+	balanceHandler := handler.NewBalanceHandler(getBalanceUsecase)
 
 	router := chi.NewRouter()
 	router.Use(logging.WithLogging, compress.WithGzipCompression)

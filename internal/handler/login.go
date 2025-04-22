@@ -8,6 +8,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
+	"github.com/iubondar/gophermart/internal/usecase"
+	"go.uber.org/zap"
 )
 
 type LoginIn struct {
@@ -20,12 +22,12 @@ type LoginChecker interface {
 }
 
 type LoginHandler struct {
-	checker LoginChecker
+	uc usecase.LoginUsecase
 }
 
-func NewLoginHandler(checker LoginChecker) *LoginHandler {
+func NewLoginHandler(uc usecase.LoginUsecase) *LoginHandler {
 	return &LoginHandler{
-		checker: checker,
+		uc: uc,
 	}
 }
 
@@ -50,8 +52,9 @@ func (handler LoginHandler) Login(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	userID, err := handler.checker.CheckLogin(req.Context(), in.Login, in.Password)
+	userID, err := handler.uc.Login(req.Context(), in.Login, in.Password)
 	if err != nil {
+		zap.L().Sugar().Debugln("Error login:", err.Error())
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}

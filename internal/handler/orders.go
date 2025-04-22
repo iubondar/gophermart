@@ -1,35 +1,20 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
-	"github.com/iubondar/gophermart/internal/constants"
-	"github.com/iubondar/gophermart/internal/models"
+	"github.com/iubondar/gophermart/internal/usecase"
 )
 
-type OrdersRepository interface {
-	Orders(ctx context.Context, userID uuid.UUID) (orders []models.Order, err error)
-}
-
-type OrdersOut struct {
-	Number     string                `json:"number"`
-	Status     constants.OrderStatus `json:"status"`
-	Accrual    float32               `json:"accrual"`
-	UploadedAt string                `json:"uploaded_at"`
-}
-
 type OrdersHandler struct {
-	repo OrdersRepository
+	uc usecase.OrdersUsecase
 }
 
-func NewOrdersHandler(repo OrdersRepository) OrdersHandler {
-	return OrdersHandler{
-		repo: repo,
+func NewOrdersHandler(uc usecase.OrdersUsecase) *OrdersHandler {
+	return &OrdersHandler{
+		uc: uc,
 	}
 }
 
@@ -45,35 +30,24 @@ func (handler OrdersHandler) Orders(res http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	orders, err := handler.repo.Orders(req.Context(), userID)
+	orders, err := handler.uc.GetOrders(req.Context(), userID)
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	out := make([]OrdersOut, 0, len(orders))
-	for i := range orders {
-		outElem := OrdersOut{
-			Number:     orders[i].Number,
-			Status:     orders[i].Status,
-			Accrual:    orders[i].Accrual,
-			UploadedAt: orders[i].UploadedAt.Format(time.RFC3339),
-		}
-		out = append(out, outElem)
+	if len(orders) == 0 {
+		res.WriteHeader(http.StatusNoContent)
+		return
 	}
 
-	resp, err := json.Marshal(out)
+	resp, err := json.Marshal(orders)
 	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+		http.Error(res, "Internal server error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	res.Header().Set("Content-Type", "application/json")
-	if len(out) == 0 {
-		res.WriteHeader(http.StatusNoContent)
-	} else {
-		res.WriteHeader(http.StatusOK)
-	}
-
+	res.WriteHeader(http.StatusOK)
 	res.Write(resp)
 }

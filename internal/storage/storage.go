@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"embed"
 	"errors"
 	"fmt"
 
@@ -11,35 +10,25 @@ import (
 	"github.com/iubondar/gophermart/internal/constants"
 	"github.com/iubondar/gophermart/internal/models"
 	"github.com/iubondar/gophermart/internal/storage/queries"
+	"github.com/iubondar/gophermart/internal/usecase"
 	"github.com/iubondar/gophermart/internal/validator"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/pressly/goose/v3"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
-
-//go:embed migrations/*.sql
-var embedMigrations embed.FS
 
 type Storage struct {
 	db *sql.DB
 }
 
+// Compile-time interface implementation check
+var _ usecase.WithdrawalsRepository = (*Storage)(nil)
+
 func NewStorage(dsn string) (storage *Storage, err error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
-		return nil, err
-	}
-
-	goose.SetBaseFS(embedMigrations)
-
-	if err := goose.SetDialect("postgres"); err != nil {
-		return nil, err
-	}
-
-	if err := goose.Up(db, "migrations"); err != nil {
 		return nil, err
 	}
 

@@ -7,23 +7,11 @@ import (
 	"strings"
 )
 
-var compressingContentTypes []string = []string{"application/json", "text/html"}
-
 const (
 	acceptEncoding  = "Accept-Encoding"
 	contentEncoding = "Content-Encoding"
 	contentType     = "Content-Type"
 )
-
-func shouldCompress(ct string) bool {
-	// return true
-	for _, contentType := range compressingContentTypes {
-		if strings.Contains(ct, contentType) {
-			return true
-		}
-	}
-	return false
-}
 
 // gzipWriter реализует интерфейс http.ResponseWriter и позволяет прозрачно для сервера
 // сжимать передаваемые данные и выставлять правильные HTTP-заголовки
@@ -45,18 +33,12 @@ func (c *gzipWriter) Header() http.Header {
 }
 
 func (c *gzipWriter) Write(p []byte) (int, error) {
-	ct := c.w.Header().Get(contentType)
-	if shouldCompress(ct) {
-		// Сжимаем только если контент нужного типа
-		c.w.Header().Set(contentEncoding, "gzip")
-		return c.zw.Write(p)
-	}
-	return c.w.Write(p)
+	c.w.Header().Set(contentEncoding, "gzip")
+	return c.zw.Write(p)
 }
 
 func (c *gzipWriter) WriteHeader(statusCode int) {
-	ct := c.w.Header().Get(contentType)
-	if shouldCompress(ct) && (statusCode < 300 || statusCode == http.StatusConflict) {
+	if statusCode < 300 || statusCode == http.StatusConflict {
 		c.w.Header().Set(contentEncoding, "gzip")
 	}
 	c.w.WriteHeader(statusCode)
@@ -64,11 +46,7 @@ func (c *gzipWriter) WriteHeader(statusCode int) {
 
 // Close закрывает gzip.Writer и досылает все данные из буфера.
 func (c *gzipWriter) Close() error {
-	ct := c.w.Header().Get(contentType)
-	if shouldCompress(ct) {
-		return c.zw.Close()
-	}
-	return nil
+	return c.zw.Close()
 }
 
 // gzipReader реализует интерфейс io.ReadCloser и позволяет прозрачно для сервера

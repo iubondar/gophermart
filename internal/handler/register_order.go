@@ -1,26 +1,22 @@
 package handler
 
 import (
-	"context"
 	"io"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
 	"github.com/iubondar/gophermart/internal/constants"
+	"github.com/iubondar/gophermart/internal/usecase"
+	"go.uber.org/zap"
 )
 
-type OrderRegistrar interface {
-	RegisterOrder(ctx context.Context, userID uuid.UUID, orderNumber string) (result constants.OrderRegistrationResult, err error)
-}
-
 type RegisterOrderHandler struct {
-	registrar OrderRegistrar
+	uc usecase.RegisterOrderUsecase
 }
 
-func NewRegisterOrderHandler(registrar OrderRegistrar) *RegisterOrderHandler {
+func NewRegisterOrderHandler(uc usecase.RegisterOrderUsecase) *RegisterOrderHandler {
 	return &RegisterOrderHandler{
-		registrar: registrar,
+		uc: uc,
 	}
 }
 
@@ -42,8 +38,9 @@ func (handler RegisterOrderHandler) RegisterOrder(res http.ResponseWriter, req *
 		return
 	}
 
-	result, err := handler.registrar.RegisterOrder(req.Context(), userID, string(body))
+	result, err := handler.uc.RegisterOrder(req.Context(), userID, string(body))
 	if err != nil {
+		zap.L().Sugar().Debugln("Failed to register order", zap.Error(err))
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}

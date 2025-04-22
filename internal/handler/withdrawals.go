@@ -1,33 +1,20 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
-	"github.com/iubondar/gophermart/internal/models"
+	"github.com/iubondar/gophermart/internal/usecase"
 )
 
-type WithdrawalsRepository interface {
-	Withdrawals(ctx context.Context, userID uuid.UUID) (withdrawal []models.Withdrawal, err error)
-}
-
-type WithdrawalsOut struct {
-	Order       string  `json:"order"`
-	Sum         float32 `json:"sum"`
-	ProcessedAt string  `json:"processed_at"`
-}
-
 type WithdrawalsHandler struct {
-	repo WithdrawalsRepository
+	uc usecase.WithdrawalsUsecase
 }
 
-func NewWithdrawalsHandler(repo WithdrawalsRepository) WithdrawalsHandler {
-	return WithdrawalsHandler{
-		repo: repo,
+func NewWithdrawalsHandler(uc usecase.WithdrawalsUsecase) *WithdrawalsHandler {
+	return &WithdrawalsHandler{
+		uc: uc,
 	}
 }
 
@@ -43,34 +30,22 @@ func (handler WithdrawalsHandler) Withdrawals(res http.ResponseWriter, req *http
 		return
 	}
 
-	withdrawals, err := handler.repo.Withdrawals(req.Context(), userID)
+	withdrawals, err := handler.uc.GetWithdrawals(req.Context(), userID)
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	out := make([]WithdrawalsOut, 0, len(withdrawals))
-	for i := range withdrawals {
-		outElem := WithdrawalsOut{
-			Order:       withdrawals[i].Number,
-			Sum:         withdrawals[i].Sum,
-			ProcessedAt: withdrawals[i].ProcessedAt.Format(time.RFC3339),
-		}
-		out = append(out, outElem)
+	res.Header().Set("Content-Type", "application/json")
+	if len(withdrawals) == 0 {
+		res.WriteHeader(http.StatusNoContent)
+		return
 	}
 
-	resp, err := json.Marshal(out)
-	if err != nil {
+	if err := json.NewEncoder(res).Encode(withdrawals); err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	res.Header().Set("Content-Type", "application/json")
-	if len(out) == 0 {
-		res.WriteHeader(http.StatusNoContent)
-	} else {
-		res.WriteHeader(http.StatusOK)
-	}
-
-	res.Write(resp)
+	res.WriteHeader(http.StatusOK)
 }

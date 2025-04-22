@@ -3,116 +3,90 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/auth"
 	"github.com/iubondar/gophermart/internal/mocks"
-	"github.com/iubondar/gophermart/internal/testhelpers"
+	"github.com/iubondar/gophermart/internal/usecase"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
 
 func TestRegisterHandler_Register(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Test cases
 	tests := []struct {
 		name           string
 		method         string
-		body           RegisterIn
-		registrarMock  func(*mocks.MockUserRegistrar)
+		body           []byte
+		ucUserID       uuid.UUID
+		ucOk           bool
+		ucError        error
 		expectedStatus int
+		expectedBody   string
 	}{
 		{
-			name:   "successful registration",
-			method: http.MethodPost,
-			body: RegisterIn{
-				Login:    "testuser",
-				Password: "testpass",
-			},
-			registrarMock: func(m *mocks.MockUserRegistrar) {
-				m.EXPECT().Register(gomock.Any(), gomock.Any(), "testuser", gomock.Any()).
-					Return(true, nil)
-			},
+			name:           "Successful registration",
+			method:         http.MethodPost,
+			body:           mustMarshal(t, usecase.RegisterIn{Login: "testuser", Password: "testpass"}),
+			ucUserID:       uuid.New(),
+			ucOk:           true,
 			expectedStatus: http.StatusOK,
 		},
 		{
-			name:   "user already exists",
-			method: http.MethodPost,
-			body: RegisterIn{
-				Login:    "existinguser",
-				Password: "testpass",
-			},
-			registrarMock: func(m *mocks.MockUserRegistrar) {
-				m.EXPECT().Register(gomock.Any(), gomock.Any(), "existinguser", gomock.Any()).
-					Return(false, nil)
-			},
+			name:           "User already exists",
+			method:         http.MethodPost,
+			body:           mustMarshal(t, usecase.RegisterIn{Login: "testuser", Password: "testpass"}),
+			ucOk:           false,
 			expectedStatus: http.StatusConflict,
 		},
 		{
-			name:   "registrar error",
-			method: http.MethodPost,
-			body: RegisterIn{
-				Login:    "testuser",
-				Password: "testpass",
-			},
-			registrarMock: func(m *mocks.MockUserRegistrar) {
-				m.EXPECT().Register(gomock.Any(), gomock.Any(), "testuser", gomock.Any()).
-					Return(false, errors.New("database error"))
-			},
-			expectedStatus: http.StatusBadRequest,
+			name:           "Usecase error",
+			method:         http.MethodPost,
+			body:           mustMarshal(t, usecase.RegisterIn{Login: "testuser", Password: "testpass"}),
+			ucError:        assert.AnError,
+			expectedStatus: http.StatusInternalServerError,
+			expectedBody:   "Failed to register user\n",
 		},
 		{
-			name:   "wrong method",
-			method: http.MethodGet,
-			body: RegisterIn{
-				Login:    "testuser",
-				Password: "testpass",
-			},
-			registrarMock:  func(m *mocks.MockUserRegistrar) {},
+			name:           "Wrong HTTP method",
+			method:         http.MethodGet,
 			expectedStatus: http.StatusMethodNotAllowed,
+			expectedBody:   "Only POST requests are allowed!\n",
 		},
 		{
-			name:   "empty login",
-			method: http.MethodPost,
-			body: RegisterIn{
-				Login:    "",
-				Password: "testpass",
-			},
-			registrarMock:  func(m *mocks.MockUserRegistrar) {},
-			expectedStatus: http.StatusBadRequest,
-		},
-		{
-			name:   "empty password",
-			method: http.MethodPost,
-			body: RegisterIn{
-				Login:    "testuser",
-				Password: "",
-			},
-			registrarMock:  func(m *mocks.MockUserRegistrar) {},
+			name:           "Invalid JSON",
+			method:         http.MethodPost,
+			body:           []byte("invalid json"),
 			expectedStatus: http.StatusBadRequest,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
-			// Create mock
-			mockRegistrar := mocks.NewMockUserRegistrar(ctrl)
-			tt.registrarMock(mockRegistrar)
+			// Setup mock usecase
+			mockUc := mocks.NewMockRegisterUsecase(ctrl)
+			if tt.method == http.MethodPost && tt.expectedStatus != http.StatusBadRequest {
+				mockUc.EXPECT().
+					Register(gomock.Any(), gomock.Any()).
+					Return(tt.ucUserID, tt.ucOk, tt.ucError)
+			}
 
 			// Create handler
-			handler := NewRegisterHandler(mockRegistrar)
-
-			// Create request body
-			body, err := json.Marshal(tt.body)
-			require.NoError(t, err)
+			handler := NewRegisterHandler(mockUc)
 
 			// Create request
-			req := httptest.NewRequest(tt.method, "/", bytes.NewBuffer(body))
+			var req *http.Request
+			if tt.method == http.MethodPost {
+				req = httptest.NewRequest(tt.method, "/api/user/register", bytes.NewBuffer(tt.body))
+			} else {
+				req = httptest.NewRequest(tt.method, "/api/user/register", nil)
+			}
 
 			// Create response recorder
 			rr := httptest.NewRecorder()
@@ -120,65 +94,30 @@ func TestRegisterHandler_Register(t *testing.T) {
 			// Call handler
 			handler.Register(rr, req)
 
+			resp := rr.Result()
+			defer resp.Body.Close()
+
 			// Check status code
 			assert.Equal(t, tt.expectedStatus, rr.Code)
 
-			// If successful registration, check for auth cookie
+			// Check response body if expected
+			if tt.expectedBody != "" {
+				assert.Equal(t, tt.expectedBody, rr.Body.String())
+			}
+
+			// Check auth cookie for successful registration
 			if tt.expectedStatus == http.StatusOK {
-				resp := rr.Result()
-				defer resp.Body.Close()
 				cookies := resp.Cookies()
-				assert.NotEmpty(t, cookies)
-				authCookie := cookies[0]
-				assert.Equal(t, auth.AuthCookieName, authCookie.Name)
-				assert.NotEmpty(t, authCookie.Value)
+				assert.Len(t, cookies, 1)
+				assert.Equal(t, auth.AuthCookieName, cookies[0].Name)
 			}
 		})
 	}
 }
 
-func TestRegisterHandler_Register_InvalidJSON(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	// Create mock
-	mockRegistrar := mocks.NewMockUserRegistrar(ctrl)
-
-	// Create handler
-	handler := NewRegisterHandler(mockRegistrar)
-
-	// Create request with invalid JSON
-	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString("invalid json"))
-
-	// Create response recorder
-	rr := httptest.NewRecorder()
-
-	// Call handler
-	handler.Register(rr, req)
-
-	// Check status code
-	assert.Equal(t, http.StatusBadRequest, rr.Code)
-}
-
-func TestRegisterHandler_Register_ReadBodyError(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	// Create mock
-	mockRegistrar := mocks.NewMockUserRegistrar(ctrl)
-
-	// Create handler
-	handler := NewRegisterHandler(mockRegistrar)
-
-	// Create request with a body that will cause an error when reading
-	req := httptest.NewRequest(http.MethodPost, "/", &testhelpers.ErrorReader{})
-
-	// Create response recorder
-	rr := httptest.NewRecorder()
-
-	// Call handler
-	handler.Register(rr, req)
-
-	// Check status code
-	assert.Equal(t, http.StatusBadRequest, rr.Code)
+func mustMarshal(t *testing.T, v any) []byte {
+	t.Helper()
+	data, err := json.Marshal(v)
+	assert.NoError(t, err)
+	return data
 }

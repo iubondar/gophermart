@@ -2,12 +2,15 @@ package storage
 
 import (
 	"context"
+	"database/sql"
+	"log"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/iubondar/gophermart/internal/constants"
 	"github.com/iubondar/gophermart/internal/models"
 	"github.com/iubondar/gophermart/internal/testhelpers"
+	"github.com/pressly/goose/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -24,6 +27,17 @@ func (s *StorageTestSuite) SetupSuite() {
 	ctx := context.Background()
 	container, err := testhelpers.CreatePostgresContainer(ctx)
 	require.NoError(s.T(), err)
+
+	db, err := sql.Open("pgx", container.ConnectionString)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	goose.SetDialect("postgres")
+	err = goose.Up(db, "./migrations")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	storage, err := NewStorage(container.ConnectionString)
 	require.NoError(s.T(), err)
